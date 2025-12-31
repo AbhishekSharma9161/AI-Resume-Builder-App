@@ -8,6 +8,11 @@ interface ResumeData {
     location: string;
     website?: string;
     linkedin?: string;
+    github?: string;
+    portfolio?: string;
+    twitter?: string;
+    codechef?: string;
+    codeforces?: string;
   };
   summary: string;
   experience: Array<{
@@ -26,7 +31,30 @@ interface ResumeData {
     endDate: string;
     gpa?: string;
   }>;
+  projects: Array<{
+    name: string;
+    description: string;
+    technologies: string[];
+    startDate: string;
+    endDate?: string;
+    current: boolean;
+    url?: string;
+    github?: string;
+  }>;
   skills: string[];
+  certifications: Array<{
+    name: string;
+    issuer: string;
+    date: string;
+    expiryDate?: string;
+    credentialId?: string;
+    url?: string;
+  }>;
+  languages: Array<{
+    name: string;
+    proficiency: string;
+  }>;
+  achievements: string[];
 }
 
 export class PDFExporter {
@@ -56,13 +84,33 @@ export class PDFExporter {
       this.addSection();
     }
 
+    if (resumeData.projects.length > 0) {
+      this.addProjects(resumeData.projects);
+      this.addSection();
+    }
+
     if (resumeData.education.length > 0) {
       this.addEducation(resumeData.education);
       this.addSection();
     }
 
+    if (resumeData.certifications.length > 0) {
+      this.addCertifications(resumeData.certifications);
+      this.addSection();
+    }
+
     if (resumeData.skills.length > 0) {
       this.addSkills(resumeData.skills);
+      this.addSection();
+    }
+
+    if (resumeData.languages.length > 0) {
+      this.addLanguages(resumeData.languages);
+      this.addSection();
+    }
+
+    if (resumeData.achievements.length > 0) {
+      this.addAchievements(resumeData.achievements);
     }
 
     // Download the PDF
@@ -101,7 +149,12 @@ export class PDFExporter {
       this.yPosition += 6;
     }
 
-    const webInfo = [personalInfo.website, personalInfo.linkedin]
+    const webInfo = [
+      personalInfo.website, 
+      personalInfo.linkedin,
+      personalInfo.github,
+      personalInfo.portfolio
+    ]
       .filter(Boolean)
       .join(" | ");
 
@@ -199,6 +252,89 @@ export class PDFExporter {
 
     const skillsText = skills.join(" • ");
     this.addText(skillsText);
+  }
+
+  private addProjects(projects: ResumeData["projects"]): void {
+    this.addSectionTitle("PROJECTS");
+
+    projects.forEach((project, index) => {
+      if (index > 0) this.yPosition += 6;
+
+      // Project name
+      this.pdf.setFontSize(11);
+      this.pdf.setFont("helvetica", "bold");
+      this.pdf.text(project.name || "Project", this.margin, this.yPosition);
+      this.yPosition += 6;
+
+      // Description
+      if (project.description) {
+        this.pdf.setFontSize(10);
+        this.pdf.setFont("helvetica", "normal");
+        this.addText(project.description);
+      }
+
+      // URLs
+      if (project.url || project.github) {
+        this.pdf.setFontSize(9);
+        this.pdf.setFont("helvetica", "normal");
+        const urls = [project.url, project.github].filter(Boolean).join(" | ");
+        this.pdf.text(urls, this.margin, this.yPosition);
+        this.yPosition += 6;
+      }
+    });
+  }
+
+  private addCertifications(certifications: ResumeData["certifications"]): void {
+    this.addSectionTitle("CERTIFICATIONS");
+
+    certifications.forEach((cert, index) => {
+      if (index > 0) this.yPosition += 4;
+
+      // Certification name and date
+      this.pdf.setFontSize(11);
+      this.pdf.setFont("helvetica", "bold");
+      this.pdf.text(cert.name || "Certification", this.margin, this.yPosition);
+
+      // Date range
+      const dateRange = cert.expiryDate ? `${cert.date} - ${cert.expiryDate}` : cert.date;
+      this.pdf.text(dateRange, this.pageWidth - this.margin, this.yPosition, {
+        align: "right",
+      });
+      this.yPosition += 6;
+
+      // Issuer
+      this.pdf.setFontSize(10);
+      this.pdf.setFont("helvetica", "normal");
+      let issuerText = cert.issuer || "Issuer";
+      if (cert.credentialId) {
+        issuerText += ` • ID: ${cert.credentialId}`;
+      }
+      this.pdf.text(issuerText, this.margin, this.yPosition);
+      this.yPosition += 6;
+    });
+  }
+
+  private addLanguages(languages: ResumeData["languages"]): void {
+    this.addSectionTitle("LANGUAGES");
+
+    this.pdf.setFontSize(10);
+    this.pdf.setFont("helvetica", "normal");
+
+    const languagesText = languages.map(lang => `${lang.name} (${lang.proficiency})`).join(" • ");
+    this.addText(languagesText);
+  }
+
+  private addAchievements(achievements: string[]): void {
+    this.addSectionTitle("ACHIEVEMENTS");
+
+    this.pdf.setFontSize(10);
+    this.pdf.setFont("helvetica", "normal");
+
+    achievements.forEach((achievement) => {
+      this.checkPageBreak(6);
+      this.pdf.text(`• ${achievement}`, this.margin, this.yPosition);
+      this.yPosition += 6;
+    });
   }
 
   private addSectionTitle(title: string): void {

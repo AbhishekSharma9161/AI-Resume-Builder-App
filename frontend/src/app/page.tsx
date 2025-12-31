@@ -72,52 +72,192 @@ export default function HomePage() {
         </div>
 
         <div className="relative z-10 w-full max-w-6xl mx-auto">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-slate-800/90 backdrop-blur-sm text-cyan-300 text-sm font-medium mb-6 shadow-lg">
-            <Sparkles className="w-3 h-3 mr-2 text-cyan-400" />
-            AI-Powered Resume Builder
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-800 via-blue-600 to-purple-600">
-              Build Your Perfect Resume with{" "}
-            </span>
-            <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
-              AI Magic
-              {/* Static sparkle effects around the text */}
-              <span className="absolute -top-2 -right-3 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></span>
-              <span className="absolute -bottom-2 -left-3 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping delay-100"></span>
-              <span className="absolute top-1/2 -right-4 w-1 h-1 bg-purple-400 rounded-full animate-ping delay-200"></span>
-              <span className="absolute -top-3 left-1/4 w-1 h-1 bg-pink-400 rounded-full animate-ping delay-300"></span>
-              <span className="absolute -bottom-3 right-1/4 w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping delay-500"></span>
-              <span className="absolute top-0 -left-2 w-1 h-1 bg-green-400 rounded-full animate-ping delay-700"></span>
-            </span>
-          </h1>
-          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
-            Create professional, ATS-optimized resumes in minutes with our
-            AI-powered builder. Get personalized suggestions, smart formatting,
-            and industry-specific content.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="text-base">
-              <Link href="/builder">
-                Start Building Free <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" className="text-base" asChild>
-              <Link href="/examples">View Examples</Link>
-            </Button>
-          </div>
-          <div className="flex items-center justify-center gap-6 mt-8 text-sm text-slate-500">
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span>4.9/5 rating</span>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="text-left">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-slate-800/90 backdrop-blur-sm text-cyan-300 text-sm font-medium mb-6 shadow-lg">
+                <Sparkles className="w-3 h-3 mr-2 text-cyan-400" />
+                AI-Powered Resume Builder
+              </div>
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-800 via-blue-600 to-purple-600">
+                  Build Your Perfect Resume with{" "}
+                </span>
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 pb-2">
+                  AI Magic
+                  {/* Static sparkle effects around the text */}
+                  <span className="absolute -top-2 -right-3 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></span>
+                  <span className="absolute -bottom-2 -left-3 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping delay-100"></span>
+                  <span className="absolute top-1/2 -right-4 w-1 h-1 bg-purple-400 rounded-full animate-ping delay-200"></span>
+                  <span className="absolute -top-3 left-1/4 w-1 h-1 bg-pink-400 rounded-full animate-ping delay-300"></span>
+                  <span className="absolute -bottom-3 right-1/4 w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping delay-500"></span>
+                  <span className="absolute top-0 -left-2 w-1 h-1 bg-green-400 rounded-full animate-ping delay-700"></span>
+                </span>
+              </h1>
+              <p className="text-xl text-slate-600 mb-8 max-w-2xl">
+                Create professional, ATS-optimized resumes in minutes with our
+                AI-powered builder. Get personalized suggestions, smart formatting,
+                and industry-specific content.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button asChild size="lg" className="text-base">
+                  <Link href="/builder">
+                    Start Building Free <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+                <Button variant="outline" size="lg" className="text-base" asChild>
+                  <Link href="/examples">View Examples</Link>
+                </Button>
+              </div>
+              <div className="flex items-center gap-6 mt-8 text-sm text-slate-500">
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span>4.9/5 rating</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  <span>50K+ users</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Download className="w-4 h-4" />
+                  <span>100K+ downloads</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              <span>50K+ users</span>
+
+            {/* Right Content - Resume Preview */}
+            <div className="relative lg:block hidden">
+              <div className="relative transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                {/* Resume Preview Card */}
+                <div className="bg-white rounded-lg shadow-2xl p-8 max-w-md mx-auto transform hover:scale-105 transition-all duration-300">
+                  {/* Resume Header */}
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">EMMA WILSON</h3>
+                    <p className="text-slate-600 text-sm">Product Manager</p>
+                    <div className="flex justify-center space-x-4 text-xs text-slate-500 mt-2">
+                      <span>emma@email.com</span>
+                      <span>•</span>
+                      <span>(555) 123-4567</span>
+                    </div>
+                  </div>
+
+                  {/* Resume Sections */}
+                  <div className="space-y-4">
+                    {/* Profile Section */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-900 mb-2 border-b border-slate-200 pb-1">PROFILE</h4>
+                      <div className="space-y-1">
+                        <div className="h-2 bg-slate-200 rounded w-full"></div>
+                        <div className="h-2 bg-slate-200 rounded w-4/5"></div>
+                        <div className="h-2 bg-slate-200 rounded w-3/4"></div>
+                      </div>
+                    </div>
+
+                    {/* Experience Section */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-900 mb-2 border-b border-slate-200 pb-1">WORK EXPERIENCE</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <div className="flex justify-between items-start mb-1">
+                            <h5 className="text-xs font-medium text-slate-800">Senior Product Manager</h5>
+                            <span className="text-xs text-slate-500">2021-2024</span>
+                          </div>
+                          <p className="text-xs text-slate-600 mb-1">TechCorp Inc.</p>
+                          <div className="space-y-1">
+                            <div className="h-1.5 bg-slate-200 rounded w-full"></div>
+                            <div className="h-1.5 bg-slate-200 rounded w-5/6"></div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between items-start mb-1">
+                            <h5 className="text-xs font-medium text-slate-800">Product Manager</h5>
+                            <span className="text-xs text-slate-500">2019-2021</span>
+                          </div>
+                          <p className="text-xs text-slate-600 mb-1">StartupXYZ</p>
+                          <div className="space-y-1">
+                            <div className="h-1.5 bg-slate-200 rounded w-4/5"></div>
+                            <div className="h-1.5 bg-slate-200 rounded w-3/4"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Skills Section */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-900 mb-2 border-b border-slate-200 pb-1">SKILLS</h4>
+                      <div className="flex flex-wrap gap-1">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Product Strategy</span>
+                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Analytics</span>
+                        <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">Leadership</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating Elements */}
+                <div className="absolute -top-4 -right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg animate-bounce">
+                  ATS Optimized
+                </div>
+                <div className="absolute -bottom-4 -left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg animate-pulse">
+                  AI Enhanced
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <Download className="w-4 h-4" />
-              <span>100K+ downloads</span>
+          </div>
+
+          {/* Company Logos in Hero Section */}
+          <div className="mt-16 pt-8 border-t border-white/20">
+            <div className="text-center">
+              <p className="text-slate-600 text-sm font-medium mb-6">
+                Our customers have been hired by <sup className="text-blue-600">*</sup>
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 opacity-70 hover:opacity-100 transition-opacity duration-300">
+                {/* HDFC Bank */}
+                <div className="flex items-center justify-center h-8 grayscale hover:grayscale-0 transition-all duration-300">
+                  <svg width="100" height="24" viewBox="0 0 100 24" className="fill-slate-700">
+                    <rect x="0" y="6" width="14" height="12" rx="1" fill="currentColor"/>
+                    <rect x="2" y="8" width="10" height="8" rx="0.5" fill="white"/>
+                    <rect x="4" y="10" width="6" height="4" fill="currentColor"/>
+                    <text x="18" y="16" fontSize="11" fontWeight="bold" fontFamily="Arial, sans-serif" fill="currentColor">HDFC BANK</text>
+                  </svg>
+                </div>
+                
+                {/* Tech Mahindra */}
+                <div className="flex items-center justify-center h-8 grayscale hover:grayscale-0 transition-all duration-300">
+                  <svg width="110" height="24" viewBox="0 0 110 24" className="fill-slate-700">
+                    <text x="0" y="12" fontSize="12" fontWeight="bold" fontFamily="Arial, sans-serif" fill="currentColor">TECH</text>
+                    <text x="0" y="22" fontSize="12" fontWeight="300" fontFamily="Arial, sans-serif" fill="currentColor">mahindra</text>
+                  </svg>
+                </div>
+                
+                {/* Genpact */}
+                <div className="flex items-center justify-center h-8 grayscale hover:grayscale-0 transition-all duration-300">
+                  <svg width="90" height="24" viewBox="0 0 90 24" className="fill-slate-700">
+                    <circle cx="8" cy="12" r="7" fill="currentColor"/>
+                    <circle cx="8" cy="12" r="4" fill="white"/>
+                    <text x="20" y="16" fontSize="12" fontWeight="normal" fontFamily="Arial, sans-serif" fill="currentColor">genpact</text>
+                  </svg>
+                </div>
+                
+                {/* Accenture */}
+                <div className="flex items-center justify-center h-8 grayscale hover:grayscale-0 transition-all duration-300">
+                  <svg width="100" height="24" viewBox="0 0 100 24" className="fill-slate-700">
+                    <text x="0" y="16" fontSize="12" fontWeight="normal" fontFamily="Arial, sans-serif" fill="currentColor">accenture</text>
+                    <polygon points="78,8 85,12 78,16" fill="currentColor"/>
+                  </svg>
+                </div>
+                
+                {/* Deloitte */}
+                <div className="flex items-center justify-center h-8 grayscale hover:grayscale-0 transition-all duration-300">
+                  <svg width="80" height="24" viewBox="0 0 80 24" className="fill-slate-700">
+                    <text x="0" y="16" fontSize="12" fontWeight="normal" fontFamily="Arial, sans-serif" fill="currentColor">Deloitte</text>
+                    <circle cx="68" cy="12" r="2.5" fill="#86BC25"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-xs text-slate-500 mt-4">
+                <sup>*</sup> Based on customer surveys and success stories from our user base
+              </p>
             </div>
           </div>
         </div>
@@ -136,152 +276,299 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-              {/* AI Brain Pattern Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-50"></div>
-              <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
-                {/* Neural network pattern */}
-                <svg
-                  viewBox="0 0 100 100"
-                  className="w-full h-full text-blue-600"
-                >
-                  <defs>
-                    <pattern
-                      id="neural"
-                      x="0"
-                      y="0"
-                      width="20"
-                      height="20"
-                      patternUnits="userSpaceOnUse"
-                    >
-                      <circle
-                        cx="10"
-                        cy="10"
-                        r="2"
-                        fill="currentColor"
-                        opacity="0.3"
-                      />
-                      <line
-                        x1="10"
-                        y1="10"
-                        x2="30"
-                        y2="10"
-                        stroke="currentColor"
-                        strokeWidth="0.5"
-                        opacity="0.2"
-                      />
-                      <line
-                        x1="10"
-                        y1="10"
-                        x2="10"
-                        y2="30"
-                        stroke="currentColor"
-                        strokeWidth="0.5"
-                        opacity="0.2"
-                      />
-                    </pattern>
-                  </defs>
-                  <rect width="100" height="100" fill="url(#neural)" />
-                </svg>
-              </div>
-              <div className="absolute bottom-2 right-2 opacity-20">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-6 bg-blue-400 rounded animate-pulse"></div>
-                  <div className="w-2 h-4 bg-cyan-400 rounded animate-pulse delay-100"></div>
-                  <div className="w-2 h-8 bg-blue-500 rounded animate-pulse delay-200"></div>
-                  <div className="w-2 h-3 bg-cyan-500 rounded animate-pulse delay-300"></div>
+          {/* Infinite Scrolling Marquee */}
+          <div className="relative overflow-hidden">
+            <div className="flex animate-marquee space-x-8">
+              {/* First set of cards */}
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                {/* AI Brain Pattern Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-50"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
+                  {/* Neural network pattern */}
+                  <svg
+                    viewBox="0 0 100 100"
+                    className="w-full h-full text-blue-600"
+                  >
+                    <defs>
+                      <pattern
+                        id="neural"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                        patternUnits="userSpaceOnUse"
+                      >
+                        <circle
+                          cx="10"
+                          cy="10"
+                          r="2"
+                          fill="currentColor"
+                          opacity="0.3"
+                        />
+                        <line
+                          x1="10"
+                          y1="10"
+                          x2="30"
+                          y2="10"
+                          stroke="currentColor"
+                          strokeWidth="0.5"
+                          opacity="0.2"
+                        />
+                        <line
+                          x1="10"
+                          y1="10"
+                          x2="10"
+                          y2="30"
+                          stroke="currentColor"
+                          strokeWidth="0.5"
+                          opacity="0.2"
+                        />
+                      </pattern>
+                    </defs>
+                    <rect width="100" height="100" fill="url(#neural)" />
+                  </svg>
                 </div>
-              </div>
-              <CardHeader className="relative z-10">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <Brain className="w-6 h-6 text-white" />
+                <div className="absolute bottom-2 right-2 opacity-20">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-6 bg-blue-400 rounded animate-pulse"></div>
+                    <div className="w-2 h-4 bg-cyan-400 rounded animate-pulse delay-100"></div>
+                    <div className="w-2 h-8 bg-blue-500 rounded animate-pulse delay-200"></div>
+                    <div className="w-2 h-3 bg-cyan-500 rounded animate-pulse delay-300"></div>
+                  </div>
                 </div>
-                <CardTitle className="group-hover:text-blue-600 transition-colors">
-                  AI-Powered Content
-                </CardTitle>
-                <CardDescription>
-                  Get intelligent suggestions for job descriptions, skills, and
-                  achievements tailored to your industry with advanced machine
-                  learning.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Brain className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-blue-600 transition-colors">
+                    AI-Powered Content
+                  </CardTitle>
+                  <CardDescription>
+                    Get intelligent suggestions for job descriptions, skills, and
+                    achievements tailored to your industry with advanced machine
+                    learning.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
 
-            <Card className="border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-              {/* ATS Scanner Pattern Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-50"></div>
-              <div className="absolute top-4 right-4 w-20 h-20 opacity-10">
-                {/* Document scanner pattern */}
-                <div className="space-y-1">
-                  <div className="h-1 bg-purple-600 rounded w-full animate-pulse"></div>
-                  <div className="h-1 bg-indigo-600 rounded w-3/4 animate-pulse delay-100"></div>
-                  <div className="h-1 bg-purple-600 rounded w-5/6 animate-pulse delay-200"></div>
-                  <div className="h-1 bg-indigo-600 rounded w-2/3 animate-pulse delay-300"></div>
-                  <div className="h-1 bg-purple-600 rounded w-4/5 animate-pulse delay-400"></div>
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                {/* ATS Scanner Pattern Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-50"></div>
+                <div className="absolute top-4 right-4 w-20 h-20 opacity-10">
+                  {/* Document scanner pattern */}
+                  <div className="space-y-1">
+                    <div className="h-1 bg-purple-600 rounded w-full animate-pulse"></div>
+                    <div className="h-1 bg-indigo-600 rounded w-3/4 animate-pulse delay-100"></div>
+                    <div className="h-1 bg-purple-600 rounded w-5/6 animate-pulse delay-200"></div>
+                    <div className="h-1 bg-indigo-600 rounded w-2/3 animate-pulse delay-300"></div>
+                    <div className="h-1 bg-purple-600 rounded w-4/5 animate-pulse delay-400"></div>
+                  </div>
                 </div>
-              </div>
-              <div className="absolute bottom-2 left-2 opacity-20">
-                <div className="w-8 h-8 border-2 border-purple-400 rounded-full flex items-center justify-center">
-                  <div className="w-4 h-4 bg-purple-400 rounded-full animate-ping"></div>
+                <div className="absolute bottom-2 left-2 opacity-20">
+                  <div className="w-8 h-8 border-2 border-purple-400 rounded-full flex items-center justify-center">
+                    <div className="w-4 h-4 bg-purple-400 rounded-full animate-ping"></div>
+                  </div>
                 </div>
-              </div>
-              <CardHeader className="relative z-10">
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
-                <CardTitle className="group-hover:text-purple-600 transition-colors">
-                  ATS Optimization
-                </CardTitle>
-                <CardDescription>
-                  Our AI ensures your resume passes Applicant Tracking Systems
-                  with optimized formatting, keywords, and structure analysis.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Zap className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-purple-600 transition-colors">
+                    ATS Optimization
+                  </CardTitle>
+                  <CardDescription>
+                    Our AI ensures your resume passes Applicant Tracking Systems
+                    with optimized formatting, keywords, and structure analysis.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
 
-            <Card className="border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-              {/* Template Grid Pattern Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-50"></div>
-              <div className="absolute top-2 right-2 w-16 h-20 opacity-15">
-                {/* Mini template previews */}
-                <div className="grid grid-cols-2 gap-1 h-full">
-                  <div className="bg-green-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
-                    <div className="h-0.5 bg-white rounded w-full"></div>
-                    <div className="h-0.5 bg-white/80 rounded w-3/4"></div>
-                    <div className="h-0.5 bg-white/60 rounded w-2/3"></div>
-                  </div>
-                  <div className="bg-emerald-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
-                    <div className="h-0.5 bg-white rounded w-full"></div>
-                    <div className="h-0.5 bg-white/80 rounded w-4/5"></div>
-                    <div className="h-0.5 bg-white/60 rounded w-3/4"></div>
-                  </div>
-                  <div className="bg-teal-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
-                    <div className="h-0.5 bg-white rounded w-full"></div>
-                    <div className="h-0.5 bg-white/80 rounded w-2/3"></div>
-                    <div className="h-0.5 bg-white/60 rounded w-3/4"></div>
-                  </div>
-                  <div className="bg-green-500 rounded-sm flex flex-col p-0.5 space-y-0.5">
-                    <div className="h-0.5 bg-white rounded w-full"></div>
-                    <div className="h-0.5 bg-white/80 rounded w-3/4"></div>
-                    <div className="h-0.5 bg-white/60 rounded w-4/5"></div>
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                {/* Template Grid Pattern Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-50"></div>
+                <div className="absolute top-2 right-2 w-16 h-20 opacity-15">
+                  {/* Mini template previews */}
+                  <div className="grid grid-cols-2 gap-1 h-full">
+                    <div className="bg-green-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
+                      <div className="h-0.5 bg-white rounded w-full"></div>
+                      <div className="h-0.5 bg-white/80 rounded w-3/4"></div>
+                      <div className="h-0.5 bg-white/60 rounded w-2/3"></div>
+                    </div>
+                    <div className="bg-emerald-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
+                      <div className="h-0.5 bg-white rounded w-full"></div>
+                      <div className="h-0.5 bg-white/80 rounded w-4/5"></div>
+                      <div className="h-0.5 bg-white/60 rounded w-3/4"></div>
+                    </div>
+                    <div className="bg-teal-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
+                      <div className="h-0.5 bg-white rounded w-full"></div>
+                      <div className="h-0.5 bg-white/80 rounded w-2/3"></div>
+                      <div className="h-0.5 bg-white/60 rounded w-3/4"></div>
+                    </div>
+                    <div className="bg-green-500 rounded-sm flex flex-col p-0.5 space-y-0.5">
+                      <div className="h-0.5 bg-white rounded w-full"></div>
+                      <div className="h-0.5 bg-white/80 rounded w-3/4"></div>
+                      <div className="h-0.5 bg-white/60 rounded w-4/5"></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <CardHeader className="relative z-10">
-                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <FileText className="w-6 h-6 text-white" />
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <FileText className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-green-600 transition-colors">
+                    Professional Templates
+                  </CardTitle>
+                  <CardDescription>
+                    Choose from dozens of professionally designed templates that
+                    work across all industries and career levels, all
+                    ATS-optimized.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                {/* Real-time Analytics Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-50"></div>
+                <div className="absolute top-4 right-4 w-16 h-16 opacity-15">
+                  {/* Analytics chart pattern */}
+                  <div className="flex items-end space-x-1 h-full">
+                    <div className="w-2 bg-orange-400 rounded-t animate-pulse" style={{height: '60%'}}></div>
+                    <div className="w-2 bg-red-400 rounded-t animate-pulse delay-100" style={{height: '80%'}}></div>
+                    <div className="w-2 bg-orange-500 rounded-t animate-pulse delay-200" style={{height: '40%'}}></div>
+                    <div className="w-2 bg-red-500 rounded-t animate-pulse delay-300" style={{height: '90%'}}></div>
+                  </div>
                 </div>
-                <CardTitle className="group-hover:text-green-600 transition-colors">
-                  Professional Templates
-                </CardTitle>
-                <CardDescription>
-                  Choose from dozens of professionally designed templates that
-                  work across all industries and career levels, all
-                  ATS-optimized.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Star className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-orange-600 transition-colors">
+                    Real-time Analytics
+                  </CardTitle>
+                  <CardDescription>
+                    Track your resume performance with detailed analytics, view counts, and optimization suggestions to improve your job search success.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                {/* Export Options Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50 opacity-50"></div>
+                <div className="absolute top-2 right-2 w-20 h-16 opacity-15">
+                  {/* File format icons */}
+                  <div className="grid grid-cols-2 gap-1">
+                    <div className="bg-violet-400 rounded text-white text-xs flex items-center justify-center font-bold">PDF</div>
+                    <div className="bg-purple-400 rounded text-white text-xs flex items-center justify-center font-bold">DOC</div>
+                    <div className="bg-violet-500 rounded text-white text-xs flex items-center justify-center font-bold">TXT</div>
+                    <div className="bg-purple-500 rounded text-white text-xs flex items-center justify-center font-bold">HTML</div>
+                  </div>
+                </div>
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Download className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-violet-600 transition-colors">
+                    Multiple Export Options
+                  </CardTitle>
+                  <CardDescription>
+                    Download your resume in multiple formats including PDF, Word, and plain text. Perfect for different application requirements.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {/* Duplicate set for seamless loop */}
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-50"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
+                  <svg viewBox="0 0 100 100" className="w-full h-full text-blue-600">
+                    <defs>
+                      <pattern id="neural2" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <circle cx="10" cy="10" r="2" fill="currentColor" opacity="0.3" />
+                        <line x1="10" y1="10" x2="30" y2="10" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+                        <line x1="10" y1="10" x2="10" y2="30" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+                      </pattern>
+                    </defs>
+                    <rect width="100" height="100" fill="url(#neural2)" />
+                  </svg>
+                </div>
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Brain className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-blue-600 transition-colors">
+                    AI-Powered Content
+                  </CardTitle>
+                  <CardDescription>
+                    Get intelligent suggestions for job descriptions, skills, and
+                    achievements tailored to your industry with advanced machine
+                    learning.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-50"></div>
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Zap className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-purple-600 transition-colors">
+                    ATS Optimization
+                  </CardTitle>
+                  <CardDescription>
+                    Our AI ensures your resume passes Applicant Tracking Systems
+                    with optimized formatting, keywords, and structure analysis.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-50"></div>
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <FileText className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-green-600 transition-colors">
+                    Professional Templates
+                  </CardTitle>
+                  <CardDescription>
+                    Choose from dozens of professionally designed templates that
+                    work across all industries and career levels, all
+                    ATS-optimized.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-50"></div>
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Star className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-orange-600 transition-colors">
+                    Real-time Analytics
+                  </CardTitle>
+                  <CardDescription>
+                    Track your resume performance with detailed analytics, view counts, and optimization suggestions to improve your job search success.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50 opacity-50"></div>
+                <CardHeader className="relative z-10">
+                  <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Download className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-violet-600 transition-colors">
+                    Multiple Export Options
+                  </CardTitle>
+                  <CardDescription>
+                    Download your resume in multiple formats including PDF, Word, and plain text. Perfect for different application requirements.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
