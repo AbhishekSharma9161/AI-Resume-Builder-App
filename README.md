@@ -2,6 +2,8 @@
 
 A modern, full-stack resume builder application powered by AI that helps users create professional, ATS-optimized resumes in minutes.
 
+<img width="1882" height="892" alt="Image" src="https://github.com/user-attachments/assets/ea7431df-595b-4b1f-9746-63797a1d224a" />
+
 ## 🚀 Features
 
 ### Core Features
