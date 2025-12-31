@@ -1,0 +1,2 @@
+// Shared API types between frontend and backend
+export {};

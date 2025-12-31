@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  resumes   Resume[]
+
+  @@map("users")
+}
+
+model Resume {
+  id        String   @id @default(cuid())
+  title     String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Personal Information
+  fullName  String?
+  email     String?
+  phone     String?
+  location  String?
+  website   String?
+  linkedin  String?
+  
+  // Professional Summary
+  summary   String?
+  
+  // Skills
+  skills    String[] // Array of skill strings
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Related data
+  experiences Experience[]
+  education   Education[]
+  
+  @@map("resumes")
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  resumeId    String
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  
+  company     String
+  position    String
+  startDate   String
+  endDate     String?
+  current     Boolean  @default(false)
+  description String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("experiences")
+}
+
+model Education {
+  id           String   @id @default(cuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  
+  school       String
+  degree       String
+  fieldOfStudy String
+  startDate    String
+  endDate      String
+  gpa          String?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@map("education")
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  description String?
+  thumbnail   String?
+  featured    Boolean  @default(false)
+  rating      Float?
+  downloads   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("templates")
+}
