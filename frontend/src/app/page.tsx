@@ -20,11 +20,15 @@ import {
   Users,
   Zap,
   X,
+  User,
+  LogOut,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function HomePage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, signOut, loading } = useAuth();
 
   useEffect(() => {
     let animationInterval: NodeJS.Timeout | null = null;
@@ -129,22 +133,56 @@ export default function HomePage() {
             >
               Pricing
             </Link>
-            <Link
-              href="/account"
-              className="text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Account
-            </Link>
-            <Button asChild size="sm">
-              <Link href="/builder">Get Started</Link>
-            </Button>
+            
+            {loading ? (
+              <div className="animate-pulse bg-gray-200 h-8 w-20 rounded"></div>
+            ) : user ? (
+              // Logged in user
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 text-slate-600">
+                  <User className="w-4 h-4" />
+                  <span className="text-sm">{user.email}</span>
+                </div>
+                <Button asChild size="sm">
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => signOut()}
+                  className="flex items-center space-x-1"
+                >
+                  <LogOut className="w-3 h-3" />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
+            ) : (
+              // Not logged in
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/login"
+                  className="text-slate-600 hover:text-slate-900 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Button asChild size="sm">
+                  <Link href="/login">Get Started</Link>
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
-            <Button asChild size="sm" className="text-xs px-3">
-              <Link href="/builder">Get Started</Link>
-            </Button>
+            {!loading && user ? (
+              <Button asChild size="sm" className="text-xs px-3">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <Button asChild size="sm" className="text-xs px-3">
+                <Link href="/login">Get Started</Link>
+              </Button>
+            )}
             <Button 
               variant="ghost" 
               size="sm" 
@@ -187,13 +225,39 @@ export default function HomePage() {
               >
                 Pricing
               </Link>
-              <Link
-                href="/account"
-                className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Account
-              </Link>
+              
+              {user ? (
+                <div className="border-t pt-4">
+                  <div className="flex items-center space-x-2 text-slate-600 mb-3">
+                    <User className="w-4 h-4" />
+                    <span className="text-sm">{user.email}</span>
+                  </div>
+                  <Link
+                    href="/dashboard"
+                    className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      signOut()
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="block text-slate-600 hover:text-slate-900 transition-colors py-2 w-full text-left"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
             </div>
           </div>
         )}

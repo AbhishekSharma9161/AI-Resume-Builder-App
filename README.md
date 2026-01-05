@@ -1,6 +1,6 @@
 # ResumeAI - AI-Powered Resume Builder
 
-A modern, full-stack resume builder application powered by AI that helps users create professional, ATS-optimized resumes in minutes.
+A modern, full-stack resume builder application powered by AI and Supabase authentication that helps users create professional, ATS-optimized resumes in minutes.
 
 <img width="1882" height="892" alt="Image" src="https://github.com/user-attachments/assets/ea7431df-595b-4b1f-9746-63797a1d224a" />
 
@@ -8,6 +8,7 @@ A modern, full-stack resume builder application powered by AI that helps users c
 
 ### Core Features
 - **AI-Powered Content Generation**: Get intelligent suggestions for job descriptions, skills, and achievements
+- **Supabase Authentication**: Secure user authentication with email/password and OAuth
 - **ATS Optimization**: Ensure your resume passes Applicant Tracking Systems
 - **Professional Templates**: Choose from dozens of professionally designed templates
 - **Real-time Preview**: See your resume update as you type
@@ -23,23 +24,25 @@ A modern, full-stack resume builder application powered by AI that helps users c
 
 ## 🏗️ Architecture
 
-This project is built with a modern, scalable architecture:
+This project is built with a modern, scalable architecture using Supabase for authentication and database:
 
 ### Frontend (Next.js)
 - **Framework**: Next.js 14 with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui (Radix UI primitives)
+- **Authentication**: Supabase Auth with custom hooks
 - **State Management**: React hooks and context
-- **API Integration**: Next.js API routes and fetch
+- **API Integration**: Custom API client with JWT tokens
 
 ### Backend (Express.js)
 - **Framework**: Express.js with TypeScript
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: JWT-based authentication
-- **Payment Processing**: Stripe integration
-- **AI Integration**: OpenAI API for content generation
-- **File Storage**: Local file system (can be extended to cloud storage)
+- **Database**: PostgreSQL (hosted on Supabase)
+- **ORM**: Prisma ORM
+- **Authentication**: Supabase JWT verification with custom middleware
+- **API Architecture**: RESTful APIs with protected routes
+- **Payment Processing**: Stripe integration (ready for implementation)
+- **AI Integration**: OpenAI API for content generation (ready for implementation)
 
 ## 🛠️ Tech Stack
 
@@ -51,6 +54,7 @@ This project is built with a modern, scalable architecture:
   "typescript": "^5.5.3",
   "tailwindcss": "^3.4.11",
   "@radix-ui/react-*": "Various UI components",
+  "@supabase/supabase-js": "^2.39.0",
   "lucide-react": "^0.462.0",
   "framer-motion": "^12.6.2"
 }
@@ -62,9 +66,12 @@ This project is built with a modern, scalable architecture:
   "express": "^4.18.2",
   "prisma": "^6.1.0",
   "@prisma/client": "^6.1.0",
+  "@supabase/supabase-js": "^2.39.0",
+  "jsonwebtoken": "^9.0.0",
   "dotenv": "^17.2.0",
   "cors": "^2.8.5",
-  "zod": "^3.23.8"
+  "zod": "^3.23.8",
+  "tsx": "^4.7.0"
 }
 ```
 
@@ -75,17 +82,29 @@ This project is built with a modern, scalable architecture:
 │   ├── src/
 │   │   ├── app/             # Next.js App router pages
 │   │   │   ├── page.tsx     # Homepage
+│   │   │   ├── login/       # Authentication pages
+│   │   │   │   └── page.tsx # Login/signup form
+│   │   │   ├── dashboard/   # Protected dashboard
+│   │   │   │   └── page.tsx # User dashboard
 │   │   │   ├── builder/     # Resume builder page
 │   │   │   ├── templates/   # Template gallery
 │   │   │   ├── pricing/     # Pricing plans
-│   │   │   └── ...          # Other pages
+│   │   │   ├── layout.tsx   # Root layout with AuthProvider
+│   │   │   └── globals.css  # Global styles
 │   │   ├── components/      # Reusable React components
 │   │   │   ├── ui/          # shadcn/ui components
-│   │   │   ├── Checkout.tsx # Payment components
+│   │   │   ├── auth/        # Authentication components
+│   │   │   │   ├── LoginForm.tsx      # Login/signup form
+│   │   │   │   └── ProtectedRoute.tsx # Route protection
 │   │   │   └── ...
+│   │   ├── hooks/           # Custom React hooks
+│   │   │   └── useAuth.tsx  # Authentication hook with Supabase
 │   │   ├── lib/             # Utility functions and services
-│   │   └── hooks/           # Custom React hooks
+│   │   │   ├── supabase.ts  # Supabase client configuration
+│   │   │   └── api.ts       # Backend API client
+│   │   └── ...
 │   ├── public/              # Static assets
+│   ├── .env.local           # Frontend environment variables
 │   ├── package.json
 │   ├── next.config.js
 │   ├── tailwind.config.ts
@@ -93,17 +112,38 @@ This project is built with a modern, scalable architecture:
 │
 ├── backend/                  # Express.js backend API
 │   ├── src/
+│   │   ├── auth/            # Authentication system
+│   │   │   ├── supabaseClient.ts    # Supabase admin client
+│   │   │   ├── auth.middleware.ts   # JWT verification middleware
+│   │   │   └── auth.types.ts        # Authentication types
 │   │   ├── routes/          # API route handlers
+│   │   │   ├── protected.routes.ts  # Protected API endpoints
 │   │   │   ├── users.ts     # User management
 │   │   │   ├── resumes.ts   # Resume CRUD operations
 │   │   │   ├── payments.ts  # Stripe payment handling
 │   │   │   └── demo.ts      # Demo endpoints
-│   │   ├── lib/             # Shared utilities
+│   │   ├── controllers/     # Business logic controllers
+│   │   │   └── user.controller.ts   # User operations
+│   │   ├── services/        # Business logic services
+│   │   │   └── user.service.ts      # User service layer
+│   │   ├── utils/           # Utility functions
+│   │   │   └── response.util.ts     # API response helpers
+│   │   ├── prisma/          # Database client
+│   │   │   └── client.ts    # Prisma client setup
+│   │   ├── types/           # TypeScript type definitions
+│   │   │   └── api.ts       # API types
 │   │   └── index.ts         # Express server setup
 │   ├── prisma/              # Database schema and migrations
+│   │   └── schema.prisma    # Database schema (Supabase compatible)
 │   ├── scripts/             # Database seeding scripts
+│   ├── dist/                # Compiled JavaScript output
+│   ├── .env                 # Backend environment variables
 │   ├── package.json
 │   └── tsconfig.json
+│
+├── shared/                   # Shared utilities between frontend/backend
+│   ├── api.js               # Shared API interfaces
+│   └── api.ts               # TypeScript API interfaces
 │
 ├── package.json              # Root workspace configuration
 ├── README.md                 # This documentation
@@ -114,96 +154,128 @@ This project is built with a modern, scalable architecture:
 
 ### Prerequisites
 - Node.js 18+ and npm
-- PostgreSQL database
-- Stripe account (for payments)
-- OpenAI API key (for AI features)
+- Supabase account (free tier available)
+- Stripe account (for payments - optional)
+- OpenAI API key (for AI features - optional)
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
-cd resumeai
+git clone https://github.com/AbhishekSharma9161/AI-Resume-Builder-App.git
+cd AI-Resume-Builder-App
 ```
 
-### 2. Install Dependencies (All Projects)
+### 2. Install Dependencies
 ```bash
-# Install all dependencies at once
-npm run install:all
+# Install root dependencies
+npm install
 
-# Or install individually:
-npm install              # Root dependencies
-npm install --prefix frontend
-npm install --prefix backend
+# Install frontend dependencies
+cd frontend && npm install
+
+# Install backend dependencies
+cd ../backend && npm install
 ```
 
-### 3. Environment Setup
+### 3. Supabase Setup
 
-**Backend Environment Variables (.env in backend folder):**
-```bash
-cd backend
-cp .env.example .env
-# Edit .env with your database URL, API keys, etc.
+#### Create Supabase Project
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Wait for the project to be created
+3. Go to Settings → API to get your keys
+4. Go to Authentication → Settings and enable Email/Password auth
+
+#### Get Your Supabase Credentials
+- **Project URL**: `https://your-project-id.supabase.co`
+- **Anon Key**: Public key for frontend (starts with `eyJ...`)
+- **Service Role Key**: Private key for backend (starts with `eyJ...`)
+- **Database Password**: From your project creation or Settings → Database
+
+### 4. Environment Setup
+
+**Backend Environment Variables (`backend/.env`):**
+```env
+PORT=5000
+NODE_ENV=development
+
+# Supabase Configuration
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Database (Supabase Postgres)
+DATABASE_URL="postgresql://postgres:your_db_password@db.your-project-id.supabase.co:5432/postgres"
+
+# Optional API keys
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-**Frontend Environment Variables (.env.local in frontend folder):**
-```bash
-cd frontend
-cp .env.local.example .env.local
-# Edit .env.local with your API URLs
+**Frontend Environment Variables (`frontend/.env.local`):**
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
 ```
 
-### 4. Database Setup
+### 5. Database Setup
 ```bash
 cd backend
 
 # Generate Prisma client
 npm run db:generate
 
-# Push schema to database
+# Push schema to Supabase database
 npm run db:push
 
-# Seed the database (optional)
+# Optional: Seed the database
 npm run db:seed
 ```
 
-### 5. Start Development Servers
+### 6. Start Development Servers
 
-**Frontend Development (Primary)**
+**Start Backend Server:**
 ```bash
-# The dev server runs the Next.js frontend automatically
-# Access your app at: http://localhost:3000
+cd backend
+npm run dev
+# Backend runs on http://localhost:5000
 ```
 
-**Start Backend API Server (Optional)**
+**Start Frontend Server (in another terminal):**
 ```bash
-# In a separate terminal, start the backend API
-./start-backend.sh
-# Or manually:
-cd backend && npm run dev    # Runs on http://localhost:5000
+cd frontend
+npm run dev
+# Frontend runs on http://localhost:3000
 ```
 
-**Development Workflow:**
-- Frontend (Next.js) runs on `http://localhost:3000` (main dev server)
-- Backend (Express.js) runs on `http://localhost:5000` (API server)
-- For full functionality, run both servers simultaneously
+### 7. Test Authentication
+
+1. Open http://localhost:3000
+2. Click "Sign In" to go to login page
+3. Create a new account or sign in
+4. Check your email for confirmation link
+5. After confirmation, sign in to access the dashboard
 
 ## 🔧 Environment Variables
 
 ### Backend (.env)
 ```env
 PORT=5000
-DATABASE_URL="postgresql://username:password@localhost:5432/resumeai"
-PING_MESSAGE="Backend server is running!"
+NODE_ENV=development
 
-# API Keys
+# Supabase Configuration
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Database (Supabase Postgres)
+DATABASE_URL="postgresql://postgres:your_db_password@db.your-project-id.supabase.co:5432/postgres"
+
+# Optional API Keys
 OPENAI_API_KEY=your_openai_api_key_here
-STRIPE_SECRET_KEY=your_stripe_secret_key_here
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret_here
 ```
 
 ### Frontend (.env.local)
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
 ```
 
 ## 📊 Database Schema

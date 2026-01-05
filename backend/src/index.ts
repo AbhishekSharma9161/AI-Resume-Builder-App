@@ -10,13 +10,7 @@ import {
   deleteResume,
 } from "./routes/resumes.js";
 import { createUser, getUserByEmail, getUser } from "./routes/users.js";
-import {
-  createCheckoutSession,
-  handleWebhook,
-  getUserSubscription,
-  cancelSubscription,
-  resumeSubscription,
-} from "./routes/payments.js";
+import protectedRoutes from "./routes/protected.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,40 +25,55 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health check
 app.get("/health", (_req, res) => {
-  res.json({ status: "OK", timestamp: new Date().toISOString() });
+  res.json({ 
+    status: "OK", 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development"
+  });
 });
 
-// Example API routes
+// Public API routes
 app.get("/api/ping", (_req, res) => {
-  const ping = process.env.PING_MESSAGE ?? "Backend server is running!";
-  res.json({ message: ping });
+  res.json({ message: "Backend server is running with Supabase auth!" });
 });
 
 app.get("/api/demo", handleDemo);
 
-// User routes
+// Legacy user routes (for backward compatibility)
 app.post("/api/users", createUser);
 app.get("/api/users/email/:email", getUserByEmail);
 app.get("/api/users/:id", getUser);
 
-// Resume routes
+// Legacy resume routes (for backward compatibility)
 app.post("/api/resumes", createResume);
 app.get("/api/users/:userId/resumes", getUserResumes);
 app.get("/api/resumes/:id", getResume);
 app.put("/api/resumes/:id", updateResume);
 app.delete("/api/resumes/:id", deleteResume);
 
-// Payment routes
-app.post("/api/payments/create-checkout-session", createCheckoutSession);
-app.post("/api/payments/webhook", handleWebhook);
-app.get("/api/users/:userId/subscription", getUserSubscription);
-app.post("/api/subscriptions/:subscriptionId/cancel", cancelSubscription);
-app.post("/api/subscriptions/:subscriptionId/resume", resumeSubscription);
+// Protected routes (require Supabase authentication)
+app.use("/api/protected", protectedRoutes);
+
+// Error handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
 
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Backend server running on http://localhost:${PORT}`);
   console.log(`📚 API docs available at http://localhost:${PORT}/api/ping`);
+  console.log(`🔐 Protected routes at http://localhost:${PORT}/api/protected/*`);
+  console.log(`🏥 Health check at http://localhost:${PORT}/health`);
 });
 
 export default app;
