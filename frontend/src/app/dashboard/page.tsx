@@ -4,12 +4,12 @@ import { useUser, UserButton } from '@clerk/nextjs'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { FileText, Plus, User, LogOut, Eye, Edit, Calendar, Clock, RefreshCw } from 'lucide-react'
+import { FileText, Plus, Eye, Edit, Calendar, Clock, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { apiClient } from '@/lib/api'
 import { useAuth } from '@clerk/nextjs'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 interface Resume {
   id: string
@@ -26,7 +26,7 @@ interface Resume {
   updatedAt: string
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const { isLoaded, isSignedIn, user } = useUser()
   const { getToken } = useAuth()
   const [resumes, setResumes] = useState<Resume[]>([])
@@ -67,10 +67,6 @@ export default function DashboardPage() {
     }
   }
 
-  const handleRefresh = () => {
-    fetchResumes(false)
-  }
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
@@ -101,10 +97,6 @@ export default function DashboardPage() {
     )
   }
 
-  if (!isSignedIn) {
-    redirect('/login')
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-indigo-100">
       {/* Navigation */}
@@ -118,6 +110,11 @@ export default function DashboardPage() {
           </div>
           
           <div className="flex items-center space-x-4">
+            <Link href="/">
+              <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                <span>Home</span>
+              </Button>
+            </Link>
             <UserButton 
               appearance={{
                 elements: {
@@ -205,7 +202,7 @@ export default function DashboardPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleRefresh}
+                    onClick={() => fetchResumes(false)}
                     disabled={loading}
                     className="flex items-center space-x-1"
                   >
@@ -224,7 +221,7 @@ export default function DashboardPage() {
               ) : error ? (
                 <div className="text-center py-8 text-red-500">
                   <p>{error}</p>
-                  <Button onClick={handleRefresh} variant="outline" className="mt-4">
+                  <Button onClick={() => fetchResumes(false)} variant="outline" className="mt-4">
                     Try Again
                   </Button>
                 </div>
@@ -308,6 +305,7 @@ export default function DashboardPage() {
               )}
             </CardContent>
           </Card>
+
           {/* Activity Log */}
           <Card className="mt-8">
             <CardHeader>
@@ -352,5 +350,13 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
   )
 }
