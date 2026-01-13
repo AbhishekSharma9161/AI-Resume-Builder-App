@@ -1,6 +1,6 @@
 'use client'
 
-import { ClerkProvider } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/clerk-react'
 import { ReactNode } from 'react'
 
 interface ProvidersProps {
@@ -9,7 +9,7 @@ interface ProvidersProps {
 
 export default function Providers({ children }: ProvidersProps) {
   return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
       {children}
     </ClerkProvider>
   )
