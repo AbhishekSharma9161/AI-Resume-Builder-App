@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { ClerkProvider } from '@clerk/nextjs';
+import Providers from './providers';
+import { ReactNode } from 'react';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,21 +14,19 @@ export const metadata: Metadata = {
   keywords: "resume builder, AI resume, ATS optimization, professional resume, job application",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+interface RootLayoutProps {
+  children: ReactNode
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClerkProvider
-          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-        >
+        <Providers>
           {children}
           <Toaster />
           <Sonner />
-        </ClerkProvider>
+        </Providers>
       </body>
     </html>
   );
