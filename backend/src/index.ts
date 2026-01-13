@@ -34,7 +34,7 @@ app.get("/health", (_req, res) => {
 
 // Public API routes
 app.get("/api/ping", (_req, res) => {
-  res.json({ message: "Backend server is running with Supabase auth!" });
+  res.json({ message: "Backend server is running with Clerk auth!" });
 });
 
 app.get("/api/demo", handleDemo);
@@ -51,7 +51,7 @@ app.get("/api/resumes/:id", getResume);
 app.put("/api/resumes/:id", updateResume);
 app.delete("/api/resumes/:id", deleteResume);
 
-// Protected routes (require Supabase authentication)
+// Protected routes (require Clerk authentication)
 app.use("/api/protected", protectedRoutes);
 
 // Error handling middleware

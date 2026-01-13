@@ -67,6 +67,38 @@ class ApiClient {
     })
   }
 
+  // Create a new resume
+  async createResume(accessToken: string, resumeData: any) {
+    return this.request('/api/protected/resumes', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(resumeData),
+    })
+  }
+
+  // Update an existing resume
+  async updateResume(accessToken: string, resumeId: string, resumeData: any) {
+    return this.request(`/api/protected/resumes/${resumeId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(resumeData),
+    })
+  }
+
+  // Delete a resume
+  async deleteResume(accessToken: string, resumeId: string) {
+    return this.request(`/api/protected/resumes/${resumeId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+  }
+
   // Generic authenticated request method
   async authenticatedRequest<T>(
     endpoint: string,

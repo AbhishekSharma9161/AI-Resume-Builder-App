@@ -1,6 +1,6 @@
 # ResumeAI - AI-Powered Resume Builder
 
-A modern, full-stack resume builder application powered by AI and Supabase authentication that helps users create professional, ATS-optimized resumes in minutes.
+A modern, full-stack resume builder application powered by AI and Clerk authentication that helps users create professional, ATS-optimized resumes in minutes.
 
 <img width="1882" height="892" alt="Image" src="https://github.com/user-attachments/assets/ea7431df-595b-4b1f-9746-63797a1d224a" />
 
@@ -8,7 +8,8 @@ A modern, full-stack resume builder application powered by AI and Supabase authe
 
 ### Core Features
 - **AI-Powered Content Generation**: Get intelligent suggestions for job descriptions, skills, and achievements
-- **Supabase Authentication**: Secure user authentication with email/password and OAuth
+- **Clerk Authentication**: Secure user authentication with email/password, OAuth, and complete user management
+- **Real-time Dashboard**: View all saved resumes with creation dates and live updates
 - **ATS Optimization**: Ensure your resume passes Applicant Tracking Systems
 - **Professional Templates**: Choose from dozens of professionally designed templates
 - **Real-time Preview**: See your resume update as you type
@@ -24,22 +25,22 @@ A modern, full-stack resume builder application powered by AI and Supabase authe
 
 ## 🏗️ Architecture
 
-This project is built with a modern, scalable architecture using Supabase for authentication and database:
+This project is built with a modern, scalable architecture using Clerk for authentication and PostgreSQL for database:
 
 ### Frontend (Next.js)
 - **Framework**: Next.js 14 with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui (Radix UI primitives)
-- **Authentication**: Supabase Auth with custom hooks
+- **Authentication**: Clerk with custom pages and UserProfile integration
 - **State Management**: React hooks and context
-- **API Integration**: Custom API client with JWT tokens
+- **API Integration**: Custom API client with Clerk JWT tokens
 
 ### Backend (Express.js)
 - **Framework**: Express.js with TypeScript
 - **Database**: PostgreSQL (hosted on Supabase)
 - **ORM**: Prisma ORM
-- **Authentication**: Supabase JWT verification with custom middleware
+- **Authentication**: Clerk JWT verification with custom middleware
 - **API Architecture**: RESTful APIs with protected routes
 - **Payment Processing**: Stripe integration (ready for implementation)
 - **AI Integration**: OpenAI API for content generation (ready for implementation)
@@ -54,7 +55,8 @@ This project is built with a modern, scalable architecture using Supabase for au
   "typescript": "^5.5.3",
   "tailwindcss": "^3.4.11",
   "@radix-ui/react-*": "Various UI components",
-  "@supabase/supabase-js": "^2.39.0",
+  "@clerk/nextjs": "^5.0.0",
+  "@clerk/express": "^1.0.0",
   "lucide-react": "^0.462.0",
   "framer-motion": "^12.6.2"
 }
@@ -66,7 +68,7 @@ This project is built with a modern, scalable architecture using Supabase for au
   "express": "^4.18.2",
   "prisma": "^6.1.0",
   "@prisma/client": "^6.1.0",
-  "@supabase/supabase-js": "^2.39.0",
+  "@clerk/express": "^1.0.0",
   "jsonwebtoken": "^9.0.0",
   "dotenv": "^17.2.0",
   "cors": "^2.8.5",
@@ -83,25 +85,29 @@ This project is built with a modern, scalable architecture using Supabase for au
 │   │   ├── app/             # Next.js App router pages
 │   │   │   ├── page.tsx     # Homepage
 │   │   │   ├── login/       # Authentication pages
-│   │   │   │   └── page.tsx # Login/signup form
+│   │   │   │   └── [[...rest]]/
+│   │   │   │       └── page.tsx # Clerk SignIn component
+│   │   │   ├── sign-up/     # User registration
+│   │   │   │   └── [[...rest]]/
+│   │   │   │       └── page.tsx # Clerk SignUp component
+│   │   │   ├── profile/     # User profile management
+│   │   │   │   └── [[...rest]]/
+│   │   │   │       └── page.tsx # Clerk UserProfile component
 │   │   │   ├── dashboard/   # Protected dashboard
-│   │   │   │   └── page.tsx # User dashboard
+│   │   │   │   └── page.tsx # User dashboard with real-time updates
 │   │   │   ├── builder/     # Resume builder page
+│   │   │   │   └── page.tsx # Resume creation interface
 │   │   │   ├── templates/   # Template gallery
 │   │   │   ├── pricing/     # Pricing plans
-│   │   │   ├── layout.tsx   # Root layout with AuthProvider
+│   │   │   ├── layout.tsx   # Root layout with ClerkProvider
 │   │   │   └── globals.css  # Global styles
 │   │   ├── components/      # Reusable React components
 │   │   │   ├── ui/          # shadcn/ui components
-│   │   │   ├── auth/        # Authentication components
-│   │   │   │   ├── LoginForm.tsx      # Login/signup form
-│   │   │   │   └── ProtectedRoute.tsx # Route protection
 │   │   │   └── ...
-│   │   ├── hooks/           # Custom React hooks
-│   │   │   └── useAuth.tsx  # Authentication hook with Supabase
 │   │   ├── lib/             # Utility functions and services
-│   │   │   ├── supabase.ts  # Supabase client configuration
-│   │   │   └── api.ts       # Backend API client
+│   │   │   ├── api.ts       # Backend API client with Clerk tokens
+│   │   │   └── ai-service.ts # AI integration services
+│   │   ├── middleware.ts    # Clerk middleware for route protection
 │   │   └── ...
 │   ├── public/              # Static assets
 │   ├── .env.local           # Frontend environment variables
@@ -297,24 +303,34 @@ npm run db:migrate   # Create and apply migrations
 
 ## 🔗 API Endpoints
 
-### Authentication
+### Public Endpoints
+- `GET /health` - Health check
+- `GET /api/ping` - Server status check
+- `GET /api/demo` - Demo endpoint
+
+### Authentication Flow
+The application uses Supabase for authentication with custom backend verification:
+
+1. **Frontend**: User signs up/in via Supabase
+2. **Token**: Supabase issues JWT access token
+3. **API Calls**: Frontend sends token in Authorization header
+4. **Backend**: Verifies token using Supabase Admin SDK
+5. **Database**: User auto-created in database on first authenticated request
+
+### Protected Endpoints (Require Bearer Token)
+- `GET /api/protected/profile` - Get current user profile
+- `PUT /api/protected/profile` - Update user profile
+- `GET /api/protected/resumes` - Get user's resumes
+
+### Legacy Endpoints (Backward Compatibility)
 - `POST /api/users` - Create new user
 - `GET /api/users/:id` - Get user by ID
 - `GET /api/users/email/:email` - Get user by email
-
-### Resumes
 - `GET /api/users/:userId/resumes` - Get user's resumes
 - `POST /api/resumes` - Create new resume
 - `GET /api/resumes/:id` - Get resume by ID
 - `PUT /api/resumes/:id` - Update resume
 - `DELETE /api/resumes/:id` - Delete resume
-
-### Payments
-- `POST /api/payments/create-checkout-session` - Create Stripe checkout
-- `POST /api/payments/webhook` - Handle Stripe webhooks
-- `GET /api/users/:userId/subscription` - Get user subscription
-- `POST /api/subscriptions/:id/cancel` - Cancel subscription
-- `POST /api/subscriptions/:id/resume` - Resume subscription
 
 ## 🎨 UI Components
 

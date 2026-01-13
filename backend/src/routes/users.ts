@@ -4,6 +4,7 @@ import { z } from "zod";
 
 // Validation schemas
 const CreateUserSchema = z.object({
+  id: z.string(), // Clerk user ID
   email: z.string().email(),
   name: z.string().min(1),
 });
@@ -15,7 +16,7 @@ export const createUser: RequestHandler = async (req, res) => {
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: data.email },
+      where: { id: data.id },
     });
 
     if (existingUser) {
@@ -24,6 +25,7 @@ export const createUser: RequestHandler = async (req, res) => {
 
     const user = await prisma.user.create({
       data: {
+        id: data.id,
         email: data.email,
         name: data.name,
       },

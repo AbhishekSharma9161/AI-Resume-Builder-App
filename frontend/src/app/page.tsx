@@ -24,11 +24,11 @@ import {
   LogOut,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useUser, SignOutButton } from "@clerk/nextjs";
 
 export default function HomePage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, signOut, loading } = useAuth();
+  const { isLoaded, isSignedIn, user } = useUser();
 
   useEffect(() => {
     let animationInterval: NodeJS.Timeout | null = null;
@@ -134,27 +134,28 @@ export default function HomePage() {
               Pricing
             </Link>
             
-            {loading ? (
+            {!isLoaded ? (
               <div className="animate-pulse bg-gray-200 h-8 w-20 rounded"></div>
-            ) : user ? (
+            ) : isSignedIn ? (
               // Logged in user
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2 text-slate-600">
                   <User className="w-4 h-4" />
-                  <span className="text-sm">{user.email}</span>
+                  <span className="text-sm">{user?.emailAddresses[0]?.emailAddress}</span>
                 </div>
                 <Button asChild size="sm">
                   <Link href="/dashboard">Dashboard</Link>
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => signOut()}
-                  className="flex items-center space-x-1"
-                >
-                  <LogOut className="w-3 h-3" />
-                  <span>Sign Out</span>
-                </Button>
+                <SignOutButton>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="flex items-center space-x-1"
+                  >
+                    <LogOut className="w-3 h-3" />
+                    <span>Sign Out</span>
+                  </Button>
+                </SignOutButton>
               </div>
             ) : (
               // Not logged in
@@ -166,7 +167,7 @@ export default function HomePage() {
                   Sign In
                 </Link>
                 <Button asChild size="sm">
-                  <Link href="/login">Get Started</Link>
+                  <Link href="/sign-up">Get Started</Link>
                 </Button>
               </div>
             )}
@@ -174,13 +175,13 @@ export default function HomePage() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
-            {!loading && user ? (
+            {!isLoaded && user ? (
               <Button asChild size="sm" className="text-xs px-3">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
             ) : (
               <Button asChild size="sm" className="text-xs px-3">
-                <Link href="/login">Get Started</Link>
+                <Link href="/sign-up">Get Started</Link>
               </Button>
             )}
             <Button 
@@ -226,11 +227,11 @@ export default function HomePage() {
                 Pricing
               </Link>
               
-              {user ? (
+              {isSignedIn ? (
                 <div className="border-t pt-4">
                   <div className="flex items-center space-x-2 text-slate-600 mb-3">
                     <User className="w-4 h-4" />
-                    <span className="text-sm">{user.email}</span>
+                    <span className="text-sm">{user?.emailAddresses[0]?.emailAddress}</span>
                   </div>
                   <Link
                     href="/dashboard"
@@ -239,24 +240,32 @@ export default function HomePage() {
                   >
                     Dashboard
                   </Link>
-                  <button
-                    onClick={() => {
-                      signOut()
-                      setIsMobileMenuOpen(false)
-                    }}
-                    className="block text-slate-600 hover:text-slate-900 transition-colors py-2 w-full text-left"
-                  >
-                    Sign Out
-                  </button>
+                  <SignOutButton>
+                    <button
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block text-slate-600 hover:text-slate-900 transition-colors py-2 w-full text-left"
+                    >
+                      Sign Out
+                    </button>
+                  </SignOutButton>
                 </div>
               ) : (
-                <Link
-                  href="/login"
-                  className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Sign In
-                </Link>
+                <div className="border-t pt-4">
+                  <Link
+                    href="/login"
+                    className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
               )}
             </div>
           </div>

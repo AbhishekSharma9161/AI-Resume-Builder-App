@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { AuthProvider } from "@/hooks/useAuth";
+import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,14 +19,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <AuthProvider>
+    <ClerkProvider
+      signInUrl="/login"
+      signUpUrl="/sign-up"
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/dashboard"
+    >
+      <html lang="en">
+        <body className={inter.className}>
           {children}
-        </AuthProvider>
-        <Toaster />
-        <Sonner />
-      </body>
-    </html>
+          <Toaster />
+          <Sonner />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
