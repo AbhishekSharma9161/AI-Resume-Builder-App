@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Download,
@@ -37,6 +37,7 @@ import {
 import { aiService } from "@/lib/ai-service";
 import { exportToPDF } from "@/lib/pdf-export";
 import { dbService } from "@/lib/database";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface Experience {
   id?: string;
@@ -114,6 +115,8 @@ interface Language {
 }
 
 export default function BuilderPage() {
+  const router = useRouter()
+  
   const [resumeData, setResumeData] = useState<ResumeData>({
     title: "My Resume",
     personalInfo: {
@@ -630,17 +633,20 @@ export default function BuilderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="bg-white border-b">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        {/* Header */}
+        <header className="bg-white border-b">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Home
-                </Link>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => router.push('/')}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
               </Button>
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -651,6 +657,14 @@ export default function BuilderPage() {
 
             </div>
             <div className="flex items-center space-x-3">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => router.push('/dashboard')}
+              >
+                <FolderOpen className="w-4 h-4 mr-2" />
+                Dashboard
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm"
@@ -1832,6 +1846,7 @@ export default function BuilderPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

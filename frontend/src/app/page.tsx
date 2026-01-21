@@ -22,9 +22,11 @@ import {
   X,
   User,
   LogOut,
+  Loader2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUser, SignOutButton } from "@clerk/nextjs";
+import AuthenticatedBuilderLink from "@/components/auth/AuthenticatedBuilderLink";
 
 export default function HomePage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -309,11 +311,9 @@ export default function HomePage() {
                 and industry-specific content.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="text-base">
-                  <Link href="/builder">
-                    Start Building Free <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
-                </Button>
+                <AuthenticatedBuilderLink size="lg" className="text-base">
+                  Start Building Free <ArrowRight className="w-4 h-4 ml-2" />
+                </AuthenticatedBuilderLink>
                 <Button variant="outline" size="lg" className="text-base" asChild>
                   <Link href="/examples">View Examples</Link>
                 </Button>
@@ -913,11 +913,9 @@ export default function HomePage() {
 
           {/* CTA Button */}
           <div className="text-center mt-12">
-            <Button asChild size="lg" className="text-base">
-              <Link href="/builder">
-                Get Started Now <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
+            <AuthenticatedBuilderLink size="lg" className="text-base">
+              Get Started Now <ArrowRight className="w-4 h-4 ml-2" />
+            </AuthenticatedBuilderLink>
           </div>
         </div>
       </section>
@@ -936,15 +934,12 @@ export default function HomePage() {
             <p className="text-slate-600 mb-8 md:mb-12 text-lg md:text-xl max-w-2xl mx-auto">
               Get more job offers with AI Resume Builder's online resume builder.
             </p>
-            <Button
-              asChild
+            <AuthenticatedBuilderLink
               size="lg"
               className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 md:px-10 md:py-4 text-base md:text-lg font-semibold rounded-full"
             >
-              <Link href="/builder">
-                Try Now <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
+              Try Now <ArrowRight className="w-4 h-4 ml-2" />
+            </AuthenticatedBuilderLink>
 
             {/* Scattered Blocks Around Text - Visible on All Devices */}
             
@@ -1030,12 +1025,12 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-slate-400">
                 <li>
-                  <Link
-                    href="/builder"
-                    className="hover:text-white transition-colors"
+                  <AuthenticatedBuilderLink 
+                    asChild={false}
+                    className="hover:text-white transition-colors text-slate-400"
                   >
                     Resume Builder
-                  </Link>
+                  </AuthenticatedBuilderLink>
                 </li>
                 <li>
                   <Link
