@@ -1,5 +1,5 @@
-// AI Service for Resume Content Suggestions
-// Note: This is a mock implementation. In production, you would integrate with actual AI APIs
+// AI Service for Resume Content Suggestions - Hugging Face Only
+import { HfInference } from '@huggingface/inference';
 
 interface AIJobSuggestion {
   content: string;
@@ -15,6 +15,29 @@ interface AISkillSuggestion {
 
 export class AIService {
   private static instance: AIService;
+  private hf: HfInference | null = null;
+  private readonly models = {
+    textGeneration: 'google/flan-t5-large',
+    textClassification: 'microsoft/DialoGPT-medium',
+    summarization: 'facebook/bart-large-cnn'
+  };
+
+  constructor() {
+    // Initialize Hugging Face client
+    const apiToken = process.env.NEXT_PUBLIC_HUGGINGFACE_API_TOKEN;
+    
+    if (apiToken && apiToken !== 'your_huggingface_api_token_here') {
+      try {
+        this.hf = new HfInference(apiToken);
+        console.log('✅ Hugging Face AI service initialized');
+      } catch (error) {
+        console.warn('❌ Failed to initialize Hugging Face client:', error);
+        this.hf = null;
+      }
+    } else {
+      console.warn('⚠️ Hugging Face API token not configured. Add NEXT_PUBLIC_HUGGINGFACE_API_TOKEN to .env.local');
+    }
+  }
 
   static getInstance(): AIService {
     if (!AIService.instance) {
@@ -23,47 +46,175 @@ export class AIService {
     return AIService.instance;
   }
 
-  // Mock professional summary suggestions
+  // Helper function to calculate years of experience
+  private calculateExperienceYears(experienceData: any[]): number {
+    if (!experienceData || experienceData.length === 0) {
+      return 1; // Default to 1 year minimum
+    }
+
+    let totalYears = 0;
+    const currentYear = new Date().getFullYear();
+
+    experienceData.forEach((exp) => {
+      if (exp.startDate) {
+        const startYear = new Date(exp.startDate).getFullYear();
+        const endYear = exp.current ? currentYear : (exp.endDate ? new Date(exp.endDate).getFullYear() : currentYear);
+        const yearsAtJob = Math.max(endYear - startYear, 0.5);
+        totalYears += yearsAtJob;
+      } else {
+        totalYears += 1;
+      }
+    });
+
+    return Math.min(Math.max(Math.round(totalYears), 1), 20);
+  }
+
+  // Helper function to ensure minimum experience
+  private ensureMinimumExperience(text: string): string {
+    return text.replace(/\b0\+/g, '1+');
+  }
+
+  // Generate professional summary using Hugging Face
   async generateSummary(
     jobTitle: string,
     experience: string[],
     skills: string[],
+    experienceData?: any[]
   ): Promise<AIJobSuggestion[]> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Calculate experience years
+    let experienceYears: number;
+    if (experienceData && experienceData.length > 0) {
+      experienceYears = this.calculateExperienceYears(experienceData);
+    } else {
+      experienceYears = Math.max(experience.length, 1);
+    }
 
-    const suggestions: AIJobSuggestion[] = [
+    const topSkills = skills.slice(0, 5).join(", ");
+
+    // If Hugging Face is available, use it
+    if (this.hf) {
+      try {
+        const prompts = [
+          `Write a professional resume summary for a ${jobTitle} with ${experienceYears}+ years of experience. Skills: ${topSkills}. Focus on achievements and leadership.`,
+          `Create a results-driven resume summary for a ${jobTitle} with ${experienceYears}+ years of experience. Skills: ${topSkills}. Emphasize quantifiable results.`,
+          `Generate an innovative resume summary for a ${jobTitle} with ${experienceYears}+ years of experience. Skills: ${topSkills}. Highlight technical expertise and problem-solving.`
+        ];
+
+        const suggestions: AIJobSuggestion[] = [];
+
+        for (let i = 0; i < prompts.length; i++) {
+          try {
+            const response = await this.hf.textGeneration({
+              model: this.models.textGeneration,
+              inputs: prompts[i],
+              parameters: {
+                max_new_tokens: 150,
+                temperature: 0.7,
+                do_sample: true,
+                top_p: 0.9,
+                repetition_penalty: 1.1
+              }
+            });
+
+            let generatedText = response.generated_text || '';
+            generatedText = generatedText.replace(prompts[i], '').trim();
+            generatedText = this.ensureMinimumExperience(generatedText);
+
+            if (generatedText.length > 20) {
+              suggestions.push({
+                content: generatedText,
+                reason: `🤖 AI-generated summary ${i === 0 ? 'focusing on leadership' : i === 1 ? 'emphasizing results' : 'highlighting innovation'}`,
+                confidence: 0.85 + (i * 0.05)
+              });
+            }
+          } catch (error) {
+            console.warn(`Failed to generate AI summary ${i + 1}:`, error);
+          }
+        }
+
+        if (suggestions.length > 0) {
+          return suggestions;
+        }
+      } catch (error) {
+        console.warn('Hugging Face AI generation failed:', error);
+      }
+    }
+
+    // Fallback: High-quality templates
+    return [
       {
-        content: `Experienced ${jobTitle} with ${experience.length}+ years of proven success in delivering high-quality solutions. Expertise in ${skills.slice(0, 3).join(", ")}, with a track record of improving team productivity and driving project success.`,
-        reason: "Emphasizes experience and key skills",
+        content: this.ensureMinimumExperience(`Experienced ${jobTitle} with ${experienceYears}+ years of proven success in delivering high-quality solutions. Expertise in ${topSkills}, with a track record of improving team productivity and driving project success.`),
+        reason: "Professional template emphasizing experience and key skills",
         confidence: 0.9,
       },
       {
-        content: `Results-driven ${jobTitle} specializing in ${skills.slice(0, 2).join(" and ")}. Demonstrated ability to lead cross-functional teams and deliver complex projects on time and within budget.`,
-        reason: "Focuses on leadership and results",
+        content: this.ensureMinimumExperience(`Results-driven ${jobTitle} with ${experienceYears}+ years specializing in ${topSkills}. Demonstrated ability to lead cross-functional teams and deliver complex projects on time and within budget.`),
+        reason: "Template focusing on leadership and results",
         confidence: 0.85,
       },
       {
-        content: `Innovative ${jobTitle} with strong background in ${skills.slice(0, 3).join(", ")}. Passionate about creating efficient solutions and mentoring junior team members.`,
-        reason: "Highlights innovation and mentorship",
+        content: this.ensureMinimumExperience(`Innovative ${jobTitle} with ${experienceYears}+ years of strong background in ${topSkills}. Passionate about creating efficient solutions and mentoring junior team members.`),
+        reason: "Template highlighting innovation and mentorship",
         confidence: 0.8,
       },
     ];
-
-    return suggestions;
   }
 
-  // Mock job description optimization
+  // Optimize job descriptions using Hugging Face
   async optimizeJobDescription(
     description: string,
     jobTitle: string,
   ): Promise<AIJobSuggestion[]> {
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    // If Hugging Face is available, use it
+    if (this.hf) {
+      try {
+        const prompts = [
+          `Rewrite this job description to be more professional and ATS-friendly. Add quantifiable achievements: "${description}"`,
+          `Transform this job description into bullet points with action verbs and metrics: "${description}"`,
+          `Optimize this job description for a ${jobTitle} role with specific accomplishments: "${description}"`
+        ];
 
-    // Convert to bullet points and add metrics
+        const suggestions: AIJobSuggestion[] = [];
+
+        for (let i = 0; i < prompts.length; i++) {
+          try {
+            const response = await this.hf.textGeneration({
+              model: this.models.textGeneration,
+              inputs: prompts[i],
+              parameters: {
+                max_new_tokens: 200,
+                temperature: 0.6,
+                do_sample: true,
+                top_p: 0.8
+              }
+            });
+
+            let optimizedText = response.generated_text || '';
+            optimizedText = optimizedText.replace(prompts[i], '').trim();
+
+            if (optimizedText.length > 20) {
+              suggestions.push({
+                content: optimizedText,
+                reason: `🤖 AI-optimized ${i === 0 ? 'for ATS compatibility' : i === 1 ? 'with bullet points' : 'with accomplishments'}`,
+                confidence: 0.8 + (i * 0.05)
+              });
+            }
+          } catch (error) {
+            console.warn(`Failed to optimize description ${i + 1}:`, error);
+          }
+        }
+
+        if (suggestions.length > 0) {
+          return suggestions;
+        }
+      } catch (error) {
+        console.warn('Hugging Face optimization failed:', error);
+      }
+    }
+
+    // Fallback: Template optimization
     let optimizedContent = description;
 
-    // Add bullet points if not present
     if (!description.includes("•") && !description.includes("-")) {
       optimizedContent = description
         .split(".")
@@ -72,7 +223,6 @@ export class AIService {
         .join("\n");
     }
 
-    // Add quantifiable achievements based on job title
     const achievementTemplates = {
       "Software Engineer": [
         "• Improved application performance by 40% through code optimization",
@@ -99,35 +249,59 @@ export class AIService {
       "• Implemented process improvements that increased efficiency by 30%",
     ];
 
-    const suggestions: AIJobSuggestion[] = [
+    return [
       {
         content: optimizedContent + "\n" + relevantAchievements[0],
-        reason:
-          "Added quantifiable achievements and improved formatting with bullet points",
+        reason: "Template optimization with quantifiable achievements",
         confidence: 0.92,
       },
       {
         content: optimizedContent + "\n" + relevantAchievements[1],
-        reason: "Enhanced with team collaboration and leadership metrics",
+        reason: "Template enhancement with team collaboration metrics",
         confidence: 0.88,
       },
       {
         content: optimizedContent + "\n" + relevantAchievements[2],
-        reason: "Added process improvement and efficiency metrics",
+        reason: "Template improvement with efficiency metrics",
         confidence: 0.85,
       },
     ];
-
-    return suggestions;
   }
 
-  // Mock skill suggestions based on job title
+  // Generate skill suggestions using Hugging Face
   async suggestSkills(
     jobTitle: string,
     currentSkills: string[],
   ): Promise<AISkillSuggestion[]> {
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    // If Hugging Face is available, use it
+    if (this.hf) {
+      try {
+        const prompt = `List 8 relevant professional skills for a ${jobTitle} position. Current skills: ${currentSkills.join(", ")}. Suggest new complementary skills.`;
 
+        const response = await this.hf.textGeneration({
+          model: this.models.textGeneration,
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: 100,
+            temperature: 0.5,
+            do_sample: true
+          }
+        });
+
+        let skillsText = response.generated_text || '';
+        skillsText = skillsText.replace(prompt, '').trim();
+
+        const suggestedSkills = this.parseSkillsFromText(skillsText, currentSkills);
+        
+        if (suggestedSkills.length > 0) {
+          return suggestedSkills;
+        }
+      } catch (error) {
+        console.warn('Hugging Face skill suggestion failed:', error);
+      }
+    }
+
+    // Fallback: Template skills
     const skillDatabase = {
       "Software Engineer": [
         { skill: "JavaScript", relevance: 0.95, category: "Programming" },
@@ -150,11 +324,7 @@ export class AIService {
       ],
       Designer: [
         { skill: "Figma", relevance: 0.95, category: "Design Tools" },
-        {
-          skill: "Adobe Creative Suite",
-          relevance: 0.9,
-          category: "Design Tools",
-        },
+        { skill: "Adobe Creative Suite", relevance: 0.9, category: "Design Tools" },
         { skill: "User Experience (UX)", relevance: 0.9, category: "Design" },
         { skill: "User Interface (UI)", relevance: 0.85, category: "Design" },
         { skill: "Prototyping", relevance: 0.8, category: "Design" },
@@ -163,23 +333,75 @@ export class AIService {
       ],
     };
 
-    const relevantSkills =
-      skillDatabase[jobTitle as keyof typeof skillDatabase] || [];
+    const relevantSkills = skillDatabase[jobTitle as keyof typeof skillDatabase] || [
+      { skill: "Communication", relevance: 0.9, category: "Soft Skills" },
+      { skill: "Problem Solving", relevance: 0.85, category: "Soft Skills" },
+      { skill: "Project Management", relevance: 0.8, category: "Management" },
+      { skill: "Team Leadership", relevance: 0.75, category: "Leadership" },
+      { skill: "Time Management", relevance: 0.7, category: "Soft Skills" },
+    ];
 
-    // Filter out skills the user already has
-    const newSkills = relevantSkills.filter(
+    return relevantSkills.filter(
       (skill) =>
         !currentSkills.some(
           (existing) =>
             existing.toLowerCase().includes(skill.skill.toLowerCase()) ||
             skill.skill.toLowerCase().includes(existing.toLowerCase()),
         ),
-    );
-
-    return newSkills.slice(0, 5); // Return top 5 suggestions
+    ).slice(0, 8);
   }
 
-  // Mock ATS optimization score
+  // Helper method to parse skills from AI-generated text
+  private parseSkillsFromText(text: string, currentSkills: string[]): AISkillSuggestion[] {
+    const lines = text.split('\n').filter(line => line.trim().length > 0);
+    const skills: AISkillSuggestion[] = [];
+
+    lines.forEach((line, index) => {
+      const skillMatch = line.match(/(?:\d+\.?\s*)?([A-Za-z\s\/\-\+]+)/);
+      if (skillMatch) {
+        const skillName = skillMatch[1].trim();
+        
+        if (skillName.length > 2 && skillName.length < 30 && 
+            !currentSkills.some(existing => 
+              existing.toLowerCase().includes(skillName.toLowerCase()) ||
+              skillName.toLowerCase().includes(existing.toLowerCase())
+            )) {
+          
+          skills.push({
+            skill: skillName,
+            relevance: Math.max(0.9 - (index * 0.1), 0.5),
+            category: this.categorizeSkill(skillName)
+          });
+        }
+      }
+    });
+
+    return skills.slice(0, 8);
+  }
+
+  private categorizeSkill(skill: string): string {
+    const skillLower = skill.toLowerCase();
+    
+    if (skillLower.includes('javascript') || skillLower.includes('python') || 
+        skillLower.includes('java') || skillLower.includes('programming')) {
+      return 'Programming';
+    } else if (skillLower.includes('react') || skillLower.includes('vue') || 
+               skillLower.includes('angular') || skillLower.includes('frontend')) {
+      return 'Frontend';
+    } else if (skillLower.includes('node') || skillLower.includes('backend') || 
+               skillLower.includes('api') || skillLower.includes('database')) {
+      return 'Backend';
+    } else if (skillLower.includes('aws') || skillLower.includes('cloud') || 
+               skillLower.includes('docker') || skillLower.includes('devops')) {
+      return 'Cloud/DevOps';
+    } else if (skillLower.includes('management') || skillLower.includes('leadership')) {
+      return 'Management';
+    } else {
+      return 'General';
+    }
+  }
+
+  // ATS Score calculation
   async getATSScore(
     resumeData: any,
   ): Promise<{ score: number; suggestions: string[]; feedback: string }> {

@@ -223,7 +223,8 @@ export default function BuilderPage() {
       const suggestions = await aiService.generateSummary(
         "Professional", // You could extract this from experience
         resumeData.experience.map(exp => exp.position),
-        resumeData.skills
+        resumeData.skills,
+        resumeData.experience // Pass the full experience data
       );
 
       if (suggestions.length > 0) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
 interface ProtectedRouteProps {
@@ -11,12 +11,15 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isLoaded, isSignedIn } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
-      router.push('/login')
+      // Redirect to login with return URL
+      const returnUrl = encodeURIComponent(pathname)
+      router.push(`/login?return_url=${returnUrl}`)
     }
-  }, [isLoaded, isSignedIn, router])
+  }, [isLoaded, isSignedIn, router, pathname])
 
   if (!isLoaded) {
     return (
