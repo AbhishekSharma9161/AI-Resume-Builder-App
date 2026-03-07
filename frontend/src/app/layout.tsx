@@ -1,3 +1,4 @@
+
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -12,6 +13,9 @@ export const metadata: Metadata = {
   title: "ResumeAI - AI-Powered Resume Builder",
   description:
     "Create professional, ATS-optimized resumes in minutes with our AI-powered builder.",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
