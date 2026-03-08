@@ -25,7 +25,7 @@ export class AIService {
   constructor() {
     // Initialize Hugging Face client
     const apiToken = process.env.NEXT_PUBLIC_HUGGINGFACE_API_TOKEN;
-    
+
     if (apiToken && apiToken !== 'your_huggingface_api_token_here') {
       try {
         this.hf = new HfInference(apiToken);
@@ -34,9 +34,8 @@ export class AIService {
         console.warn('❌ Failed to initialize Hugging Face client:', error);
         this.hf = null;
       }
-    } else {
-      console.warn('⚠️ Hugging Face API token not configured. Add NEXT_PUBLIC_HUGGINGFACE_API_TOKEN to .env.local');
     }
+    // No token configured — AI features will use built-in templates as fallback
   }
 
   static getInstance(): AIService {
@@ -244,10 +243,10 @@ export class AIService {
     const relevantAchievements = achievementTemplates[
       jobTitle as keyof typeof achievementTemplates
     ] || [
-      "• Exceeded performance targets by 25% through strategic planning and execution",
-      "• Collaborated with cross-functional teams to deliver projects ahead of schedule",
-      "• Implemented process improvements that increased efficiency by 30%",
-    ];
+        "• Exceeded performance targets by 25% through strategic planning and execution",
+        "• Collaborated with cross-functional teams to deliver projects ahead of schedule",
+        "• Implemented process improvements that increased efficiency by 30%",
+      ];
 
     return [
       {
@@ -292,7 +291,7 @@ export class AIService {
         skillsText = skillsText.replace(prompt, '').trim();
 
         const suggestedSkills = this.parseSkillsFromText(skillsText, currentSkills);
-        
+
         if (suggestedSkills.length > 0) {
           return suggestedSkills;
         }
@@ -360,13 +359,13 @@ export class AIService {
       const skillMatch = line.match(/(?:\d+\.?\s*)?([A-Za-z\s\/\-\+]+)/);
       if (skillMatch) {
         const skillName = skillMatch[1].trim();
-        
-        if (skillName.length > 2 && skillName.length < 30 && 
-            !currentSkills.some(existing => 
-              existing.toLowerCase().includes(skillName.toLowerCase()) ||
-              skillName.toLowerCase().includes(existing.toLowerCase())
-            )) {
-          
+
+        if (skillName.length > 2 && skillName.length < 30 &&
+          !currentSkills.some(existing =>
+            existing.toLowerCase().includes(skillName.toLowerCase()) ||
+            skillName.toLowerCase().includes(existing.toLowerCase())
+          )) {
+
           skills.push({
             skill: skillName,
             relevance: Math.max(0.9 - (index * 0.1), 0.5),
@@ -381,18 +380,18 @@ export class AIService {
 
   private categorizeSkill(skill: string): string {
     const skillLower = skill.toLowerCase();
-    
-    if (skillLower.includes('javascript') || skillLower.includes('python') || 
-        skillLower.includes('java') || skillLower.includes('programming')) {
+
+    if (skillLower.includes('javascript') || skillLower.includes('python') ||
+      skillLower.includes('java') || skillLower.includes('programming')) {
       return 'Programming';
-    } else if (skillLower.includes('react') || skillLower.includes('vue') || 
-               skillLower.includes('angular') || skillLower.includes('frontend')) {
+    } else if (skillLower.includes('react') || skillLower.includes('vue') ||
+      skillLower.includes('angular') || skillLower.includes('frontend')) {
       return 'Frontend';
-    } else if (skillLower.includes('node') || skillLower.includes('backend') || 
-               skillLower.includes('api') || skillLower.includes('database')) {
+    } else if (skillLower.includes('node') || skillLower.includes('backend') ||
+      skillLower.includes('api') || skillLower.includes('database')) {
       return 'Backend';
-    } else if (skillLower.includes('aws') || skillLower.includes('cloud') || 
-               skillLower.includes('docker') || skillLower.includes('devops')) {
+    } else if (skillLower.includes('aws') || skillLower.includes('cloud') ||
+      skillLower.includes('docker') || skillLower.includes('devops')) {
       return 'Cloud/DevOps';
     } else if (skillLower.includes('management') || skillLower.includes('leadership')) {
       return 'Management';
