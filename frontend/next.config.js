@@ -3,11 +3,12 @@ const nextConfig = {
   images: {
     domains: ['cdn.builder.io'],
   },
+  // Add this to prevent build errors:
+  output: 'standalone',  // ← Add this for Render deployment
   async rewrites() {
-    // Handle case where NEXT_PUBLIC_API_URL might be undefined
     const API_BASE = process.env.NEXT_PUBLIC_API_URL && 
                      process.env.NEXT_PUBLIC_API_URL !== 'undefined'
-      ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '') // remove trailing slash
+      ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
       : '';
 
     return [

@@ -6,6 +6,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { ReactNode } from "react";
 
+// Force all pages to be server-rendered on demand, never statically prerendered.
+// This prevents useContext null errors from Clerk/Radix UI during build.
+export const dynamic = "force-dynamic";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
