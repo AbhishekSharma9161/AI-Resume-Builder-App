@@ -25,13 +25,16 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health check
 app.get("/health", (_req, res) => {
-  res.json({ 
-    status: "OK", 
+  res.json({
+    status: "OK",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || "development"
   });
 });
 
+app.get("/", (_req, res) => {
+  res.json({ message: "Backend server is running" });
+});
 // Public API routes
 app.get("/api/ping", (_req, res) => {
   res.json({ message: "Backend server is running with Clerk auth!" });
@@ -57,7 +60,7 @@ app.use("/api/protected", protectedRoutes);
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Unhandled error:', err);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
   });
