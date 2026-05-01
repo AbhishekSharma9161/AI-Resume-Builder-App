@@ -1,5 +1,5 @@
 import { Response, Request } from 'express';
-import { prisma } from '../prisma/client';
+import { prisma } from '../prisma/client.js';
 
 export class UserController {
   static async getCurrentUser(req: Request, res: Response) {

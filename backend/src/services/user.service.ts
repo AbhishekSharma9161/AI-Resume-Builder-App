@@ -1,4 +1,4 @@
-import { prisma } from '../prisma/client';
+import { prisma } from '../prisma/client.js';
 
 export class UserService {
   static async findUserById(id: string) {

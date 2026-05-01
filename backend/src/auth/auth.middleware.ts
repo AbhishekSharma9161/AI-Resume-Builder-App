@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { clerkClient, verifyToken } from '@clerk/express';
-import { prisma } from '../prisma/client';
+import { prisma } from '../prisma/client.js';
 
 export interface AuthenticatedUser {
   id: string;
