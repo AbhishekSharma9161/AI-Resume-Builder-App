@@ -650,9 +650,7 @@ export default function BuilderPage() {
                 Back to Home
               </Button>
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-white" />
-                </div>
+              
                 <h1 className="text-xl font-bold text-slate-900">Resume Builder</h1>
               </div>
 
@@ -701,7 +699,7 @@ export default function BuilderPage() {
 
       <div className="flex h-[calc(100vh-80px)]">
         {/* Sidebar */}
-        <div className="w-80 bg-white border-r overflow-y-auto">
+        <div className="w-80 bg-cyan-100 border-r overflow-y-auto">
           <div className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">

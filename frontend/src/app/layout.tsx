@@ -17,7 +17,11 @@ export const metadata: Metadata = {
   description:
     "Create professional, ATS-optimized resumes in minutes with our AI-powered builder.",
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 };
 

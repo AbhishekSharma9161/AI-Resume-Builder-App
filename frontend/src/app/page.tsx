@@ -27,6 +27,7 @@ import {
 import { useEffect, useState } from "react";
 import { useUser, SignOutButton } from "@clerk/nextjs";
 import AuthenticatedBuilderLink from "@/components/auth/AuthenticatedBuilderLink";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function HomePage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -104,178 +105,217 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-cyan-100 via-blue-200 to-indigo-300">
       {/* Navigation */}
-      <nav className="px-6 py-6 relative">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <FileText className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-xl font-bold text-slate-900">ResumeAI</span>
+      <div className="flex justify-center w-full py-4 px-4 relative z-50 bg-transparent">
+        <motion.nav
+          className="flex items-center justify-between px-6 py-3 bg-white/90 backdrop-blur-md rounded-full shadow-lg w-full max-w-5xl relative"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          {/* Logo */}
+          <div className="flex items-center flex-shrink-0">
+           <span className="text-xl font-extrabold bg-gradient-to-r from-black via-gray-700 to-gray-500 bg-clip-text text-transparent tracking-wide">
+  ResumeAI
+</span>
           </div>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            <Link
-              href="/templates"
-              className="text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Templates
-            </Link>
-            <Link
-              href="/examples"
-              className="text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Examples
-            </Link>
-            <Link
-              href="/pricing"
-              className="text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Pricing
-            </Link>
-            
-            {!isLoaded ? (
-              <div className="animate-pulse bg-gray-200 h-8 w-20 rounded"></div>
-            ) : isSignedIn ? (
-              // Logged in user
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 text-slate-600">
-                  <User className="w-4 h-4" />
-                  <span className="text-sm">{user?.emailAddresses[0]?.emailAddress}</span>
-                </div>
-                <Button asChild size="sm">
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
-                <SignOutButton>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="flex items-center space-x-1"
-                  >
-                    <LogOut className="w-3 h-3" />
-                    <span>Sign Out</span>
-                  </Button>
-                </SignOutButton>
-              </div>
-            ) : (
-              // Not logged in
-              <div className="flex items-center space-x-4">
+
+          {/* Desktop Center Navigation */}
+          <div className="hidden md:flex items-center space-x-8 absolute left-1/2 -translate-x-1/2">
+            {[
+              { label: "Templates", href: "/templates" },
+              { label: "Examples", href: "/examples" },
+              { label: "Pricing", href: "/pricing" },
+            ].map((item, i) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+              >
                 <Link
-                  href="/login"
-                  className="text-slate-600 hover:text-slate-900 transition-colors"
+                  href={item.href}
+                  className="text-sm text-slate-600 hover:text-slate-900 transition-colors font-medium"
                 >
-                  Sign In
+                  {item.label}
                 </Link>
-                <Button asChild size="sm">
-                  <Link href="/sign-up">Get Started</Link>
-                </Button>
-              </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Desktop Right Side - Auth */}
+          <div className="hidden md:flex items-center space-x-3 flex-shrink-0">
+            {!isLoaded ? (
+              <div className="animate-pulse bg-gray-200 h-8 w-20 rounded-full" />
+            ) : isSignedIn ? (
+              <>
+                <div className="flex items-center space-x-2 text-slate-600 text-sm">
+                  <User className="w-4 h-4" />
+                  <span className="font-medium">{user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0]}</span>
+                </div>
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Button asChild size="sm" className="rounded-full">
+                    <Link href="/dashboard">Dashboard</Link>
+                  </Button>
+                </motion.div>
+                <SignOutButton>
+                  <motion.div whileHover={{ scale: 1.05 }}>
+                    <Button variant="outline" size="sm" className="rounded-full flex items-center space-x-1">
+                      <LogOut className="w-3 h-3" />
+                      <span>Sign Out</span>
+                    </Button>
+                  </motion.div>
+                </SignOutButton>
+              </>
+            ) : (
+              <>
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Link href="/login" className="text-sm text-slate-600 hover:text-slate-900 transition-colors font-medium px-2">
+                    Sign In
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button asChild size="sm" className="rounded-full bg-black hover:bg-gray-800 text-white px-5">
+                    <Link href="/sign-up">Get Started</Link>
+                  </Button>
+                </motion.div>
+              </>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Right */}
           <div className="md:hidden flex items-center space-x-2">
-            {!isLoaded && user ? (
-              <Button asChild size="sm" className="text-xs px-3">
+            {isSignedIn ? (
+              <Button asChild size="sm" className="text-xs px-3 rounded-full">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
             ) : (
-              <Button asChild size="sm" className="text-xs px-3">
+              <Button asChild size="sm" className="text-xs px-3 rounded-full bg-black hover:bg-gray-800 text-white">
                 <Link href="/sign-up">Get Started</Link>
               </Button>
             )}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="p-2"
+            <motion.button
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              whileTap={{ scale: 0.9 }}
             >
               {isMobileMenuOpen ? (
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-gray-900" />
               ) : (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
-            </Button>
+            </motion.button>
           </div>
-        </div>
+        </motion.nav>
 
-        {/* Mobile Menu Dropdown */}
-        {isMobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-50 md:hidden">
-            <div className="px-6 py-4 space-y-4">
-              <Link
-                href="/templates"
-                className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
+        {/* Mobile Menu Overlay */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              className="fixed inset-0 bg-white z-50 pt-24 px-6 md:hidden"
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            >
+              <motion.button
+                className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100"
                 onClick={() => setIsMobileMenuOpen(false)}
+                whileTap={{ scale: 0.9 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
               >
-                Templates
-              </Link>
-              <Link
-                href="/examples"
-                className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Examples
-              </Link>
-              <Link
-                href="/pricing"
-                className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Pricing
-              </Link>
-              
-              {isSignedIn ? (
-                <div className="border-t pt-4">
-                  <div className="flex items-center space-x-2 text-slate-600 mb-3">
-                    <User className="w-4 h-4" />
-                    <span className="text-sm">{user?.emailAddresses[0]?.emailAddress}</span>
-                  </div>
-                  <Link
-                    href="/dashboard"
-                    className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                <X className="h-6 w-6 text-gray-900" />
+              </motion.button>
+
+              <div className="flex flex-col space-y-6">
+                {[
+                  { label: "Templates", href: "/templates" },
+                  { label: "Examples", href: "/examples" },
+                  { label: "Pricing", href: "/pricing" },
+                ].map((item, i) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 + 0.1 }}
+                    exit={{ opacity: 0, x: 20 }}
                   >
-                    Dashboard
-                  </Link>
-                  <SignOutButton>
-                    <button
+                    <Link
+                      href={item.href}
+                      className="text-base text-slate-700 font-medium hover:text-slate-900"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block text-slate-600 hover:text-slate-900 transition-colors py-2 w-full text-left"
                     >
-                      Sign Out
-                    </button>
-                  </SignOutButton>
-                </div>
-              ) : (
-                <div className="border-t pt-4">
-                  <Link
-                    href="/login"
-                    className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/sign-up"
-                    className="block text-slate-600 hover:text-slate-900 transition-colors py-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </nav>
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
 
+                <div className="border-t pt-6">
+                  {isSignedIn ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="space-y-4"
+                    >
+                      <div className="flex items-center space-x-2 text-slate-600">
+                        <User className="w-4 h-4" />
+                        <span className="text-sm font-medium">{user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0]}</span>
+                      </div>
+                      <Link
+                        href="/dashboard"
+                        className="block text-slate-700 font-medium hover:text-slate-900 py-1"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                      <SignOutButton>
+                        <button
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 py-1 w-full text-left"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span>Sign Out</span>
+                        </button>
+                      </SignOutButton>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="space-y-4"
+                    >
+                      <Link
+                        href="/login"
+                        className="block text-slate-700 font-medium hover:text-slate-900 py-1"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/sign-up"
+                        className="block text-slate-700 font-medium hover:text-slate-900 py-1"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Sign Up
+                      </Link>
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
       {/* Hero Section */}
-      <section className="px-6 py-20 min-h-[calc(100vh-80px)] flex items-center text-center relative overflow-hidden bg-gradient-to-br from-cyan-100 via-blue-200 to-indigo-300">
+      <section className="px-6 py-20 min-h-[calc(100vh-80px)] flex items-center text-center relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
@@ -342,7 +382,7 @@ export default function HomePage() {
                   {/* Resume Header */}
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-slate-900 mb-2">EMMA WILSON</h3>
-                    <p className="text-slate-600 text-sm">Product Manager</p>
+                    <p className="text-slate-600 text-sm">Senior Software Developer</p>
                     <div className="flex justify-center space-x-4 text-xs text-slate-500 mt-2">
                       <span>emma@email.com</span>
                       <span>•</span>
@@ -368,7 +408,7 @@ export default function HomePage() {
                       <div className="space-y-3">
                         <div>
                           <div className="flex justify-between items-start mb-1">
-                            <h5 className="text-xs font-medium text-slate-800">Senior Product Manager</h5>
+                            <h5 className="text-xs font-medium text-slate-800">Senior Software</h5>
                             <span className="text-xs text-slate-500">2021-2024</span>
                           </div>
                           <p className="text-xs text-slate-600 mb-1">TechCorp Inc.</p>
@@ -562,224 +602,224 @@ export default function HomePage() {
                   </CardHeader>
                 </Card>
 
-              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-                {/* ATS Scanner Pattern Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-50"></div>
-                <div className="absolute top-4 right-4 w-20 h-20 opacity-10">
-                  {/* Document scanner pattern */}
-                  <div className="space-y-1">
-                    <div className="h-1 bg-purple-600 rounded w-full animate-pulse"></div>
-                    <div className="h-1 bg-indigo-600 rounded w-3/4 animate-pulse delay-100"></div>
-                    <div className="h-1 bg-purple-600 rounded w-5/6 animate-pulse delay-200"></div>
-                    <div className="h-1 bg-indigo-600 rounded w-2/3 animate-pulse delay-300"></div>
-                    <div className="h-1 bg-purple-600 rounded w-4/5 animate-pulse delay-400"></div>
-                  </div>
-                </div>
-                <div className="absolute bottom-2 left-2 opacity-20">
-                  <div className="w-8 h-8 border-2 border-purple-400 rounded-full flex items-center justify-center">
-                    <div className="w-4 h-4 bg-purple-400 rounded-full animate-ping"></div>
-                  </div>
-                </div>
-                <CardHeader className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Zap className="w-6 h-6 text-white" />
-                  </div>
-                  <CardTitle className="group-hover:text-purple-600 transition-colors">
-                    ATS Optimization
-                  </CardTitle>
-                  <CardDescription>
-                    Our AI ensures your resume passes Applicant Tracking Systems
-                    with optimized formatting, keywords, and structure analysis.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-                {/* Template Grid Pattern Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-50"></div>
-                <div className="absolute top-2 right-2 w-16 h-20 opacity-15">
-                  {/* Mini template previews */}
-                  <div className="grid grid-cols-2 gap-1 h-full">
-                    <div className="bg-green-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
-                      <div className="h-0.5 bg-white rounded w-full"></div>
-                      <div className="h-0.5 bg-white/80 rounded w-3/4"></div>
-                      <div className="h-0.5 bg-white/60 rounded w-2/3"></div>
-                    </div>
-                    <div className="bg-emerald-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
-                      <div className="h-0.5 bg-white rounded w-full"></div>
-                      <div className="h-0.5 bg-white/80 rounded w-4/5"></div>
-                      <div className="h-0.5 bg-white/60 rounded w-3/4"></div>
-                    </div>
-                    <div className="bg-teal-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
-                      <div className="h-0.5 bg-white rounded w-full"></div>
-                      <div className="h-0.5 bg-white/80 rounded w-2/3"></div>
-                      <div className="h-0.5 bg-white/60 rounded w-3/4"></div>
-                    </div>
-                    <div className="bg-green-500 rounded-sm flex flex-col p-0.5 space-y-0.5">
-                      <div className="h-0.5 bg-white rounded w-full"></div>
-                      <div className="h-0.5 bg-white/80 rounded w-3/4"></div>
-                      <div className="h-0.5 bg-white/60 rounded w-4/5"></div>
+                <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                  {/* ATS Scanner Pattern Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-50"></div>
+                  <div className="absolute top-4 right-4 w-20 h-20 opacity-10">
+                    {/* Document scanner pattern */}
+                    <div className="space-y-1">
+                      <div className="h-1 bg-purple-600 rounded w-full animate-pulse"></div>
+                      <div className="h-1 bg-indigo-600 rounded w-3/4 animate-pulse delay-100"></div>
+                      <div className="h-1 bg-purple-600 rounded w-5/6 animate-pulse delay-200"></div>
+                      <div className="h-1 bg-indigo-600 rounded w-2/3 animate-pulse delay-300"></div>
+                      <div className="h-1 bg-purple-600 rounded w-4/5 animate-pulse delay-400"></div>
                     </div>
                   </div>
-                </div>
-                <CardHeader className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <FileText className="w-6 h-6 text-white" />
+                  <div className="absolute bottom-2 left-2 opacity-20">
+                    <div className="w-8 h-8 border-2 border-purple-400 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-purple-400 rounded-full animate-ping"></div>
+                    </div>
                   </div>
-                  <CardTitle className="group-hover:text-green-600 transition-colors">
-                    Professional Templates
-                  </CardTitle>
-                  <CardDescription>
-                    Choose from dozens of professionally designed templates that
-                    work across all industries and career levels, all
-                    ATS-optimized.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+                  <CardHeader className="relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Zap className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="group-hover:text-purple-600 transition-colors">
+                      ATS Optimization
+                    </CardTitle>
+                    <CardDescription>
+                      Our AI ensures your resume passes Applicant Tracking Systems
+                      with optimized formatting, keywords, and structure analysis.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
 
-              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-                {/* Real-time Analytics Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-50"></div>
-                <div className="absolute top-4 right-4 w-16 h-16 opacity-15">
-                  {/* Analytics chart pattern */}
-                  <div className="flex items-end space-x-1 h-full">
-                    <div className="w-2 bg-orange-400 rounded-t animate-pulse" style={{ height: '60%' }}></div>
-                    <div className="w-2 bg-red-400 rounded-t animate-pulse delay-100" style={{ height: '80%' }}></div>
-                    <div className="w-2 bg-orange-500 rounded-t animate-pulse delay-200" style={{ height: '40%' }}></div>
-                    <div className="w-2 bg-red-500 rounded-t animate-pulse delay-300" style={{ height: '90%' }}></div>
+                <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                  {/* Template Grid Pattern Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-50"></div>
+                  <div className="absolute top-2 right-2 w-16 h-20 opacity-15">
+                    {/* Mini template previews */}
+                    <div className="grid grid-cols-2 gap-1 h-full">
+                      <div className="bg-green-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
+                        <div className="h-0.5 bg-white rounded w-full"></div>
+                        <div className="h-0.5 bg-white/80 rounded w-3/4"></div>
+                        <div className="h-0.5 bg-white/60 rounded w-2/3"></div>
+                      </div>
+                      <div className="bg-emerald-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
+                        <div className="h-0.5 bg-white rounded w-full"></div>
+                        <div className="h-0.5 bg-white/80 rounded w-4/5"></div>
+                        <div className="h-0.5 bg-white/60 rounded w-3/4"></div>
+                      </div>
+                      <div className="bg-teal-400 rounded-sm flex flex-col p-0.5 space-y-0.5">
+                        <div className="h-0.5 bg-white rounded w-full"></div>
+                        <div className="h-0.5 bg-white/80 rounded w-2/3"></div>
+                        <div className="h-0.5 bg-white/60 rounded w-3/4"></div>
+                      </div>
+                      <div className="bg-green-500 rounded-sm flex flex-col p-0.5 space-y-0.5">
+                        <div className="h-0.5 bg-white rounded w-full"></div>
+                        <div className="h-0.5 bg-white/80 rounded w-3/4"></div>
+                        <div className="h-0.5 bg-white/60 rounded w-4/5"></div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <CardHeader className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Star className="w-6 h-6 text-white" />
-                  </div>
-                  <CardTitle className="group-hover:text-orange-600 transition-colors">
-                    Real-time Analytics
-                  </CardTitle>
-                  <CardDescription>
-                    Track your resume performance with detailed analytics, view counts, and optimization suggestions to improve your job search success.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+                  <CardHeader className="relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <FileText className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="group-hover:text-green-600 transition-colors">
+                      Professional Templates
+                    </CardTitle>
+                    <CardDescription>
+                      Choose from dozens of professionally designed templates that
+                      work across all industries and career levels, all
+                      ATS-optimized.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
 
-              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-                {/* Export Options Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50 opacity-50"></div>
-                <div className="absolute top-2 right-2 w-20 h-16 opacity-15">
-                  {/* File format icons */}
-                  <div className="grid grid-cols-2 gap-1">
-                    <div className="bg-violet-400 rounded text-white text-xs flex items-center justify-center font-bold">PDF</div>
-                    <div className="bg-purple-400 rounded text-white text-xs flex items-center justify-center font-bold">DOC</div>
-                    <div className="bg-violet-500 rounded text-white text-xs flex items-center justify-center font-bold">TXT</div>
-                    <div className="bg-purple-500 rounded text-white text-xs flex items-center justify-center font-bold">HTML</div>
+                <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                  {/* Real-time Analytics Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-50"></div>
+                  <div className="absolute top-4 right-4 w-16 h-16 opacity-15">
+                    {/* Analytics chart pattern */}
+                    <div className="flex items-end space-x-1 h-full">
+                      <div className="w-2 bg-orange-400 rounded-t animate-pulse" style={{ height: '60%' }}></div>
+                      <div className="w-2 bg-red-400 rounded-t animate-pulse delay-100" style={{ height: '80%' }}></div>
+                      <div className="w-2 bg-orange-500 rounded-t animate-pulse delay-200" style={{ height: '40%' }}></div>
+                      <div className="w-2 bg-red-500 rounded-t animate-pulse delay-300" style={{ height: '90%' }}></div>
+                    </div>
                   </div>
-                </div>
-                <CardHeader className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Download className="w-6 h-6 text-white" />
-                  </div>
-                  <CardTitle className="group-hover:text-violet-600 transition-colors">
-                    Multiple Export Options
-                  </CardTitle>
-                  <CardDescription>
-                    Download your resume in multiple formats including PDF, Word, and plain text. Perfect for different application requirements.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+                  <CardHeader className="relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Star className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="group-hover:text-orange-600 transition-colors">
+                      Real-time Analytics
+                    </CardTitle>
+                    <CardDescription>
+                      Track your resume performance with detailed analytics, view counts, and optimization suggestions to improve your job search success.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
 
-              {/* Duplicate set for seamless loop */}
-              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-50"></div>
-                <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
-                  <svg viewBox="0 0 100 100" className="w-full h-full text-blue-600">
-                    <defs>
-                      <pattern id="neural2" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                        <circle cx="10" cy="10" r="2" fill="currentColor" opacity="0.3" />
-                        <line x1="10" y1="10" x2="30" y2="10" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
-                        <line x1="10" y1="10" x2="10" y2="30" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
-                      </pattern>
-                    </defs>
-                    <rect width="100" height="100" fill="url(#neural2)" />
-                  </svg>
-                </div>
-                <CardHeader className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Brain className="w-6 h-6 text-white" />
+                <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                  {/* Export Options Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50 opacity-50"></div>
+                  <div className="absolute top-2 right-2 w-20 h-16 opacity-15">
+                    {/* File format icons */}
+                    <div className="grid grid-cols-2 gap-1">
+                      <div className="bg-violet-400 rounded text-white text-xs flex items-center justify-center font-bold">PDF</div>
+                      <div className="bg-purple-400 rounded text-white text-xs flex items-center justify-center font-bold">DOC</div>
+                      <div className="bg-violet-500 rounded text-white text-xs flex items-center justify-center font-bold">TXT</div>
+                      <div className="bg-purple-500 rounded text-white text-xs flex items-center justify-center font-bold">HTML</div>
+                    </div>
                   </div>
-                  <CardTitle className="group-hover:text-blue-600 transition-colors">
-                    AI-Powered Content
-                  </CardTitle>
-                  <CardDescription>
-                    Get intelligent suggestions for job descriptions, skills, and
-                    achievements tailored to your industry with advanced machine
-                    learning.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+                  <CardHeader className="relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Download className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="group-hover:text-violet-600 transition-colors">
+                      Multiple Export Options
+                    </CardTitle>
+                    <CardDescription>
+                      Download your resume in multiple formats including PDF, Word, and plain text. Perfect for different application requirements.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
 
-              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-50"></div>
-                <CardHeader className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Zap className="w-6 h-6 text-white" />
+                {/* Duplicate set for seamless loop */}
+                <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-50"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
+                    <svg viewBox="0 0 100 100" className="w-full h-full text-blue-600">
+                      <defs>
+                        <pattern id="neural2" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                          <circle cx="10" cy="10" r="2" fill="currentColor" opacity="0.3" />
+                          <line x1="10" y1="10" x2="30" y2="10" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+                          <line x1="10" y1="10" x2="10" y2="30" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+                        </pattern>
+                      </defs>
+                      <rect width="100" height="100" fill="url(#neural2)" />
+                    </svg>
                   </div>
-                  <CardTitle className="group-hover:text-purple-600 transition-colors">
-                    ATS Optimization
-                  </CardTitle>
-                  <CardDescription>
-                    Our AI ensures your resume passes Applicant Tracking Systems
-                    with optimized formatting, keywords, and structure analysis.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+                  <CardHeader className="relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Brain className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="group-hover:text-blue-600 transition-colors">
+                      AI-Powered Content
+                    </CardTitle>
+                    <CardDescription>
+                      Get intelligent suggestions for job descriptions, skills, and
+                      achievements tailored to your industry with advanced machine
+                      learning.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
 
-              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-50"></div>
-                <CardHeader className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <FileText className="w-6 h-6 text-white" />
-                  </div>
-                  <CardTitle className="group-hover:text-green-600 transition-colors">
-                    Professional Templates
-                  </CardTitle>
-                  <CardDescription>
-                    Choose from dozens of professionally designed templates that
-                    work across all industries and career levels, all
-                    ATS-optimized.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+                <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-50"></div>
+                  <CardHeader className="relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Zap className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="group-hover:text-purple-600 transition-colors">
+                      ATS Optimization
+                    </CardTitle>
+                    <CardDescription>
+                      Our AI ensures your resume passes Applicant Tracking Systems
+                      with optimized formatting, keywords, and structure analysis.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
 
-              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-50"></div>
-                <CardHeader className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Star className="w-6 h-6 text-white" />
-                  </div>
-                  <CardTitle className="group-hover:text-orange-600 transition-colors">
-                    Real-time Analytics
-                  </CardTitle>
-                  <CardDescription>
-                    Track your resume performance with detailed analytics, view counts, and optimization suggestions to improve your job search success.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+                <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-50"></div>
+                  <CardHeader className="relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <FileText className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="group-hover:text-green-600 transition-colors">
+                      Professional Templates
+                    </CardTitle>
+                    <CardDescription>
+                      Choose from dozens of professionally designed templates that
+                      work across all industries and career levels, all
+                      ATS-optimized.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
 
-              <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50 opacity-50"></div>
-                <CardHeader className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Download className="w-6 h-6 text-white" />
-                  </div>
-                  <CardTitle className="group-hover:text-violet-600 transition-colors">
-                    Multiple Export Options
-                  </CardTitle>
-                  <CardDescription>
-                    Download your resume in multiple formats including PDF, Word, and plain text. Perfect for different application requirements.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </div>
+                <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-50"></div>
+                  <CardHeader className="relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Star className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="group-hover:text-orange-600 transition-colors">
+                      Real-time Analytics
+                    </CardTitle>
+                    <CardDescription>
+                      Track your resume performance with detailed analytics, view counts, and optimization suggestions to improve your job search success.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+
+                <Card className="min-w-[350px] border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50 opacity-50"></div>
+                  <CardHeader className="relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Download className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="group-hover:text-violet-600 transition-colors">
+                      Multiple Export Options
+                    </CardTitle>
+                    <CardDescription>
+                      Download your resume in multiple formats including PDF, Word, and plain text. Perfect for different application requirements.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </div>
             </div>
 
             {/* Mobile: Horizontal Scroll with 2-3 visible cards */}
@@ -942,12 +982,12 @@ export default function HomePage() {
             </AuthenticatedBuilderLink>
 
             {/* Scattered Blocks Around Text - Visible on All Devices */}
-            
+
             {/* Top Left Area */}
             <div className="absolute -top-8 md:-top-16 -left-16 md:-left-32">
               <div className="w-16 h-20 md:w-24 md:h-32 bg-pink-300 rounded-xl transform rotate-12 shadow-lg"></div>
             </div>
-            
+
             <div className="absolute -top-4 md:-top-8 -left-8 md:-left-16">
               <div className="w-10 h-10 md:w-16 md:h-16 bg-blue-600 rounded-lg transform -rotate-6 shadow-md"></div>
             </div>
@@ -1025,7 +1065,7 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-slate-400">
                 <li>
-                  <AuthenticatedBuilderLink 
+                  <AuthenticatedBuilderLink
                     asChild={false}
                     className="hover:text-white transition-colors text-slate-400"
                   >
